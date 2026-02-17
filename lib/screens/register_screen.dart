@@ -18,55 +18,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _loading = false;
 
   Future<void> _register() async {
-  if (_loading) return;
+    if (_loading) return;
 
-  final name = _nameController.text.trim();
-  final email = _emailController.text.trim();
-  final password = _passwordController.text.trim();
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-  if (name.isEmpty || email.isEmpty || password.isEmpty) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please fill all fields')),
-    );
-    return;
-  }
-
-  setState(() => _loading = true);
-
-  try {
-    final user = await _authService.register(
-      name: name,
-      email: email,
-      password: password,
-    );
-
-    if (!mounted) return;
-
-    if (user != null) {
-      // ✅ STOP loading FIRST
-      setState(() => _loading = false);
-
-      // ✅ IMMEDIATE navigation (no delay)
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-        (route) => false,
-      );
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
       return;
     }
-  } catch (e) {
-    if (!mounted) return;
 
-    setState(() => _loading = false);
+    setState(() => _loading = true);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(e.toString())),
-    );
-    return;
+    try {
+      final user = await _authService.register(
+        name: name,
+        email: email,
+        password: password,
+      );
+
+      if (!mounted) return;
+
+      if (user != null) {
+        // ✅ STOP loading FIRST
+        setState(() => _loading = false);
+
+        // ✅ IMMEDIATE navigation (no delay)
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+        );
+        return;
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _loading = false);
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      return;
+    }
+
+    if (mounted) setState(() => _loading = false);
   }
-
-  if (mounted) setState(() => _loading = false);
-}
 
   @override
   void dispose() {
@@ -102,27 +102,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 const Text(
                   'Create Account',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 30),
 
                 TextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Full Name',
-                  ),
+                  decoration: const InputDecoration(labelText: 'Full Name'),
                 ),
 
                 const SizedBox(height: 16),
 
                 TextField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email Address',
-                  ),
+                  decoration: const InputDecoration(labelText: 'Email Address'),
                 ),
 
                 const SizedBox(height: 16),
@@ -130,9 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                  ),
+                  decoration: const InputDecoration(labelText: 'Password'),
                 ),
 
                 const SizedBox(height: 28),

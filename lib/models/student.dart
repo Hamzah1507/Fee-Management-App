@@ -26,8 +26,7 @@ class Student {
       course: data['course'] ?? '',
       totalFees: data['totalFees'] ?? 0,
       paidFees: data['paidFees'] ?? 0,
-      createdAt:
-          (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 

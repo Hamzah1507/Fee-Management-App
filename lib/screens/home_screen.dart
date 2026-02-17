@@ -9,8 +9,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final studentsRef =
-        FirebaseFirestore.instance.collection('students');
+    final studentsRef = FirebaseFirestore.instance.collection('students');
 
     return Scaffold(
       backgroundColor: const Color(0xfff5f7fb),
@@ -60,9 +59,7 @@ class HomeScreen extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const AddStudentScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const AddStudentScreen()),
           );
         },
         icon: const Icon(Icons.person_add_alt_1),
@@ -115,64 +112,63 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       child: ListTile(
-  contentPadding:
-      const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 10,
+        ),
 
-  // ✅ OPEN STUDENT DETAILS
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => StudentDetailsScreen(student: student),
-      ),
-    );
-  },
+        // ✅ OPEN STUDENT DETAILS
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => StudentDetailsScreen(student: student),
+            ),
+          );
+        },
 
-  leading: CircleAvatar(
-    radius: 24,
-    backgroundColor: Colors.white,
-    child: Text(
-      student.name.isNotEmpty
-          ? student.name[0].toUpperCase()
-          : '?',
-      style: const TextStyle(
-        fontWeight: FontWeight.bold,
-        color: Color(0xff6C63FF),
-      ),
-    ),
-  ),
+        leading: CircleAvatar(
+          radius: 24,
+          backgroundColor: Colors.white,
+          child: Text(
+            student.name.isNotEmpty ? student.name[0].toUpperCase() : '?',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xff6C63FF),
+            ),
+          ),
+        ),
 
-  title: Text(
-    student.name,
-    style: const TextStyle(
-      fontWeight: FontWeight.bold,
-      color: Colors.white,
-      fontSize: 16,
-    ),
-  ),
+        title: Text(
+          student.name,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 16,
+          ),
+        ),
 
-  subtitle: Text(
-    student.course,
-    style: const TextStyle(color: Colors.white70),
-  ),
+        subtitle: Text(
+          student.course,
+          style: const TextStyle(color: Colors.white70),
+        ),
 
-  trailing: Container(
-    padding:
-        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(30),
-    ),
-    child: Text(
-      '₹${student.totalFees}',
-      style: const TextStyle(
-        fontWeight: FontWeight.bold,
-        color: Colors.green,
-      ),
-    ),
-  ),
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Text(
+            '₹${student.totalFees}',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+            ),
+          ),
+        ),
 
-  // ✅ DELETE (keep your existing onLongPress below this)
+        // ✅ DELETE (keep your existing onLongPress below this)
 
         // ✅ DELETE FROM FIRESTORE
         onLongPress: () async {
@@ -203,9 +199,9 @@ class HomeScreen extends StatelessWidget {
                 .doc(student.id)
                 .delete();
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Student deleted')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Student deleted')));
           }
         },
       ),

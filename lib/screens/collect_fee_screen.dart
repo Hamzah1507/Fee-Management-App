@@ -6,10 +6,7 @@ import '../models/payment.dart';
 class CollectFeeScreen extends StatefulWidget {
   final Student student;
 
-  const CollectFeeScreen({
-    super.key,
-    required this.student,
-  });
+  const CollectFeeScreen({super.key, required this.student});
 
   @override
   State<CollectFeeScreen> createState() => _CollectFeeScreenState();
@@ -30,9 +27,9 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
     final amount = int.tryParse(_amountController.text.trim()) ?? 0;
 
     if (amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter valid amount')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter valid amount')));
       return;
     }
 
@@ -43,15 +40,11 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
           .collection('students')
           .doc(widget.student.id);
 
-      final paymentRef =
-          FirebaseFirestore.instance.collection('payments').doc();
+      final paymentRef = FirebaseFirestore.instance
+          .collection('payments')
+          .doc();
 
-      final newPaid = widget.student.paidFees + amount;
-
-      // ✅ Update student paid fees
-      await studentRef.update({
-        'paidFees': newPaid,
-      });
+      await studentRef.update({'paidFees': FieldValue.increment(amount)});
 
       // ✅ Save payment record
       final payment = Payment(
@@ -66,14 +59,14 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Payment collected')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Payment collected')));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
 
     if (mounted) setState(() => _loading = false);
@@ -84,10 +77,7 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
     final pending = widget.student.pendingFees;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Collect Fee'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Collect Fee'), centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

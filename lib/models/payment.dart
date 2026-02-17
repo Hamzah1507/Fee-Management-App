@@ -22,8 +22,7 @@ class Payment {
       studentId: data['studentId'] ?? '',
       amount: data['amount'] ?? 0,
       method: data['method'] ?? 'cash',
-      createdAt:
-          (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 

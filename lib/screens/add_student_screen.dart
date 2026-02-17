@@ -33,8 +33,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     setState(() => _loading = true);
 
     try {
-      final studentsRef =
-          FirebaseFirestore.instance.collection('students');
+      final studentsRef = FirebaseFirestore.instance.collection('students');
 
       final docRef = studentsRef.doc();
 
@@ -59,9 +58,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
 
     if (mounted) setState(() => _loading = false);
@@ -84,8 +83,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                   width: 90,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withOpacity(0.1),
                   ),
                   child: Icon(
                     Icons.school_rounded,
@@ -104,10 +104,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                     labelText: 'Student Name',
                     prefixIcon: Icon(Icons.person_outline),
                   ),
-                  validator: (value) =>
-                      value == null || value.trim().isEmpty
-                          ? 'Enter student name'
-                          : null,
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Enter student name'
+                      : null,
                 ),
 
                 const SizedBox(height: 16),
@@ -119,10 +118,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                     labelText: 'Course',
                     prefixIcon: Icon(Icons.menu_book_outlined),
                   ),
-                  validator: (value) =>
-                      value == null || value.trim().isEmpty
-                          ? 'Enter course'
-                          : null,
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Enter course'
+                      : null,
                 ),
 
                 const SizedBox(height: 16),
@@ -135,10 +133,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                     labelText: 'Total Fees',
                     prefixIcon: Icon(Icons.currency_rupee),
                   ),
-                  validator: (value) =>
-                      value == null || value.trim().isEmpty
-                          ? 'Enter fees amount'
-                          : null,
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Enter fees amount'
+                      : null,
                 ),
 
                 const SizedBox(height: 28),
