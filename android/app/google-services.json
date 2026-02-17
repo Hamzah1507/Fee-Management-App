@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1050688892343",
+    "project_id": "fees-management-app-9b377",
+    "storage_bucket": "fees-management-app-9b377.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050688892343:android:d837d42291ecc1ba0e8c32",
+        "android_client_info": {
+          "package_name": "com.example.fees_management_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-2N1FZeFl_FPeGekSVLIycIHQV3PkLSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
