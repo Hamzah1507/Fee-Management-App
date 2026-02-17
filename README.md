@@ -1,17 +1,65 @@
-# fees_management_app
+Fee Management App
+A Flutter-based mobile application for managing student fee records efficiently. Built with Firebase for authentication and real-time data storage.
+📱 Features
 
-A new Flutter project.
+🔐 User Authentication (Login & Register) via Firebase
+🏠 Home dashboard to view all students
+➕ Add new student records
+📋 Manage and track fee payments
+🌐 Cross-platform support (Android, iOS, Web, Windows, Linux, macOS)
 
-## Getting Started
+🛠️ Tech Stack
 
-This project is a starting point for a Flutter application.
+Framework: Flutter
+Language: Dart
+Backend/Auth: Firebase (Authentication + Firestore)
+State Management: Built-in Flutter state
 
-A few resources to get you started if this is your first Flutter project:
+🚀 Getting Started
+Prerequisites
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Flutter SDK installed → Install Flutter
+Firebase project set up → Firebase Console
+Android Studio or VS Code
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Installation
+
+Clone the repository
+
+bash   git clone https://github.com/Hamzah1507/Fee-Management-App.git
+   cd Fee-Management-App
+
+Install dependencies
+
+bash   flutter pub get
+
+Run the app
+
+bash   flutter run
+📁 Project Structure
+lib/
+├── main.dart
+├── models/
+│   └── student.dart
+├── screens/
+│   ├── welcome_screen.dart
+│   ├── login_screen.dart
+│   ├── register_screen.dart
+│   ├── home_screen.dart
+│   └── add_student_screen.dart
+└── services/
+    └── auth_service.dart
+🔧 Firebase Setup
+
+Create a Firebase project at Firebase Console
+Add your Android/iOS app to the Firebase project
+Download and replace google-services.json in android/app/
+Enable Email/Password Authentication in Firebase Console
+
+
+🤝 Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you'd like to change.
+📄 License
+This project is licensed under the MIT License.
+
+Made with ❤️ using Flutter
