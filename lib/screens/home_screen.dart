@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/student.dart';
 import 'add_student_screen.dart';
+import 'student_details_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -114,52 +115,64 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+  contentPadding:
+      const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
 
-        leading: CircleAvatar(
-          radius: 24,
-          backgroundColor: Colors.white,
-          child: Text(
-            student.name.isNotEmpty
-                ? student.name[0].toUpperCase()
-                : '?',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Color(0xff6C63FF),
-            ),
-          ),
-        ),
+  // ✅ OPEN STUDENT DETAILS
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => StudentDetailsScreen(student: student),
+      ),
+    );
+  },
 
-        title: Text(
-          student.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 16,
-          ),
-        ),
+  leading: CircleAvatar(
+    radius: 24,
+    backgroundColor: Colors.white,
+    child: Text(
+      student.name.isNotEmpty
+          ? student.name[0].toUpperCase()
+          : '?',
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Color(0xff6C63FF),
+      ),
+    ),
+  ),
 
-        subtitle: Text(
-          student.course,
-          style: const TextStyle(color: Colors.white70),
-        ),
+  title: Text(
+    student.name,
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      color: Colors.white,
+      fontSize: 16,
+    ),
+  ),
 
-        trailing: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Text(
-            '₹${student.totalFees}',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.green,
-            ),
-          ),
-        ),
+  subtitle: Text(
+    student.course,
+    style: const TextStyle(color: Colors.white70),
+  ),
+
+  trailing: Container(
+    padding:
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(30),
+    ),
+    child: Text(
+      '₹${student.totalFees}',
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.green,
+      ),
+    ),
+  ),
+
+  // ✅ DELETE (keep your existing onLongPress below this)
 
         // ✅ DELETE FROM FIRESTORE
         onLongPress: () async {
