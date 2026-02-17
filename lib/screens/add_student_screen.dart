@@ -44,7 +44,6 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
         course: _courseController.text.trim(),
         totalFees: int.tryParse(_feesController.text.trim()) ?? 0,
         paidFees: 0,
-        instituteId: 'demo_institute', // 🔥 later make dynamic
         createdAt: DateTime.now(),
       );
 

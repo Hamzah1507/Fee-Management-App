@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/student.dart';
+import 'collect_fee_screen.dart';
 
 class StudentDetailsScreen extends StatelessWidget {
   final Student student;
@@ -71,7 +72,12 @@ class StudentDetailsScreen extends StatelessWidget {
               height: 52,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: connect collect fee screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CollectFeeScreen(student: student),
+                    ),
+                  );
                 },
                 child: const Text('Collect Fee'),
               ),

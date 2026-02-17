@@ -45,8 +45,8 @@ class HomeScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final doc = students[index];
               final student = Student.fromMap(
-                doc.data() as Map<String, dynamic>,
                 doc.id,
+                doc.data() as Map<String, dynamic>,
               );
               return _studentCard(context, student);
             },
