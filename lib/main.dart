@@ -1,34 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
-
-import 'models/student.dart';
 import 'screens/welcome_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ Firebase init
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(); // ✅ ONLY this init
 
-  // ✅ Hive init
-  await Hive.initFlutter();
-  Hive.registerAdapter(StudentAdapter());
-  await Hive.openBox<Student>('students');
-
-  runApp(const FeesApp());
+  runApp(const MyApp());
 }
 
-class FeesApp extends StatelessWidget {
-  const FeesApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Fees Management',
-      theme: ThemeData(useMaterial3: true),
-      home: const WelcomeScreen(), // ⭐ start from welcome
+      theme: ThemeData(
+        colorSchemeSeed: Colors.indigo,
+        useMaterial3: true,
+      ),
+      home: const WelcomeScreen(),
     );
   }
 }

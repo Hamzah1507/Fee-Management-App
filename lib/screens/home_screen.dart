@@ -1,5 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import '../models/student.dart';
 import 'add_student_screen.dart';
 
@@ -8,12 +8,13 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final box = Hive.box<Student>('students');
+    final studentsRef =
+        FirebaseFirestore.instance.collection('students');
 
     return Scaffold(
       backgroundColor: const Color(0xfff5f7fb),
 
-      // ✅ MODERN APPBAR
+      // ✅ APP BAR
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
@@ -23,26 +24,36 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
 
-      // ✅ BODY
-      body: ValueListenableBuilder(
-        valueListenable: box.listenable(),
-        builder: (context, Box<Student> box, _) {
-          if (box.isEmpty) {
+      // ✅ FIRESTORE LIVE LIST
+      body: StreamBuilder<QuerySnapshot>(
+        stream: studentsRef.orderBy('createdAt', descending: true).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return _emptyState();
           }
 
+          final students = snapshot.data!.docs;
+
           return ListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
-            itemCount: box.length,
+            itemCount: students.length,
             itemBuilder: (context, index) {
-              final student = box.getAt(index)!;
+              final doc = students[index];
+              final student = Student.fromMap(
+                doc.data() as Map<String, dynamic>,
+                doc.id,
+              );
               return _studentCard(context, student);
             },
           );
         },
       ),
 
-      // ✅ PREMIUM FAB
+      // ✅ FAB
       floatingActionButton: FloatingActionButton.extended(
         elevation: 6,
         onPressed: () {
@@ -61,15 +72,11 @@ class HomeScreen extends StatelessWidget {
 
   // ================= EMPTY STATE =================
   Widget _emptyState() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(
-            Icons.school_outlined,
-            size: 80,
-            color: Colors.grey,
-          ),
+        children: [
+          Icon(Icons.school_outlined, size: 80, color: Colors.grey),
           SizedBox(height: 16),
           Text(
             'No students yet',
@@ -110,7 +117,6 @@ class HomeScreen extends StatelessWidget {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
 
-        // ✅ AVATAR
         leading: CircleAvatar(
           radius: 24,
           backgroundColor: Colors.white,
@@ -125,7 +131,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
 
-        // ✅ NAME
         title: Text(
           student.name,
           style: const TextStyle(
@@ -135,13 +140,11 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
 
-        // ✅ COURSE
         subtitle: Text(
           student.course,
           style: const TextStyle(color: Colors.white70),
         ),
 
-        // ✅ FEES BADGE
         trailing: Container(
           padding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -150,7 +153,7 @@ class HomeScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
           ),
           child: Text(
-            '₹${student.fees}',
+            '₹${student.totalFees}',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.green,
@@ -158,23 +161,20 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
 
-        // ✅ DELETE WITH CONFIRM
+        // ✅ DELETE FROM FIRESTORE
         onLongPress: () async {
           final confirm = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
               title: const Text('Delete Student'),
-              content:
-                  Text('Delete ${student.name}?'),
+              content: Text('Delete ${student.name}?'),
               actions: [
                 TextButton(
-                  onPressed: () =>
-                      Navigator.pop(context, false),
+                  onPressed: () => Navigator.pop(context, false),
                   child: const Text('Cancel'),
                 ),
                 TextButton(
-                  onPressed: () =>
-                      Navigator.pop(context, true),
+                  onPressed: () => Navigator.pop(context, true),
                   child: const Text(
                     'Delete',
                     style: TextStyle(color: Colors.red),
@@ -185,11 +185,13 @@ class HomeScreen extends StatelessWidget {
           );
 
           if (confirm == true) {
-            await student.delete();
+            await FirebaseFirestore.instance
+                .collection('students')
+                .doc(student.id)
+                .delete();
+
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Student deleted'),
-              ),
+              const SnackBar(content: Text('Student deleted')),
             );
           }
         },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/student.dart';
 
 class AddStudentScreen extends StatefulWidget {
@@ -16,6 +16,8 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   final _courseController = TextEditingController();
   final _feesController = TextEditingController();
 
+  bool _loading = false;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -24,27 +26,52 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     super.dispose();
   }
 
+  // ✅ SAVE TO FIRESTORE (PRODUCTION)
   Future<void> _saveStudent() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final student = Student(
-      name: _nameController.text.trim(),
-      course: _courseController.text.trim(),
-      fees: int.tryParse(_feesController.text.trim()) ?? 0,
-    );
+    setState(() => _loading = true);
 
-    final box = Hive.box<Student>('students');
-    await box.add(student);
+    try {
+      final studentsRef =
+          FirebaseFirestore.instance.collection('students');
 
-    if (mounted) Navigator.pop(context);
+      final docRef = studentsRef.doc();
+
+      final student = Student(
+        id: docRef.id,
+        name: _nameController.text.trim(),
+        course: _courseController.text.trim(),
+        totalFees: int.tryParse(_feesController.text.trim()) ?? 0,
+        paidFees: 0,
+        instituteId: 'demo_institute', // 🔥 later make dynamic
+        createdAt: DateTime.now(),
+      );
+
+      await docRef.set({
+        ...student.toMap(),
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Student added successfully')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+
+    if (mounted) setState(() => _loading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Student'),
-      ),
+      appBar: AppBar(title: const Text('Add Student')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -52,16 +79,14 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
             key: _formKey,
             child: Column(
               children: [
-                // ⭐ TOP ICON
+                // ⭐ ICON
                 Container(
                   height: 90,
                   width: 90,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withOpacity(0.1),
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.1),
                   ),
                   child: Icon(
                     Icons.school_rounded,
@@ -72,7 +97,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
                 const SizedBox(height: 24),
 
-                // ⭐ NAME FIELD
+                // NAME
                 TextFormField(
                   controller: _nameController,
                   textCapitalization: TextCapitalization.words,
@@ -88,10 +113,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
                 const SizedBox(height: 16),
 
-                // ⭐ COURSE FIELD
+                // COURSE
                 TextFormField(
                   controller: _courseController,
-                  textCapitalization: TextCapitalization.words,
                   decoration: const InputDecoration(
                     labelText: 'Course',
                     prefixIcon: Icon(Icons.menu_book_outlined),
@@ -104,12 +128,12 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
                 const SizedBox(height: 16),
 
-                // ⭐ FEES FIELD
+                // FEES
                 TextFormField(
                   controller: _feesController,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                    labelText: 'Fees Amount',
+                    labelText: 'Total Fees',
                     prefixIcon: Icon(Icons.currency_rupee),
                   ),
                   validator: (value) =>
@@ -120,24 +144,21 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
                 const SizedBox(height: 28),
 
-                // ⭐ SAVE BUTTON
+                // BUTTON
                 SizedBox(
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: _saveStudent,
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: const Text(
-                      'Save Student',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    onPressed: _loading ? null : _saveStudent,
+                    child: _loading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Save Student',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ),
               ],
