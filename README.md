@@ -1,42 +1,65 @@
-Fee Management App
-A Flutter-based mobile application for managing student fee records efficiently. Built with Firebase for authentication and real-time data storage.
-📱 Features
+# 💰 Fee Management App
 
-🔐 User Authentication (Login & Register) via Firebase
-🏠 Home dashboard to view all students
-➕ Add new student records
-📋 Manage and track fee payments
-🌐 Cross-platform support (Android, iOS, Web, Windows, Linux, macOS)
+A Flutter-based mobile application for managing student fee records efficiently.  
+Built with **Firebase** for authentication and real-time data storage.
 
-🛠️ Tech Stack
+---
 
-Framework: Flutter
-Language: Dart
-Backend/Auth: Firebase (Authentication + Firestore)
-State Management: Built-in Flutter state
+## 📱 Features
 
-🚀 Getting Started
-Prerequisites
+- 🔐 User Authentication (Login & Register) via Firebase
+- 🏠 Home dashboard to view all students
+- ➕ Add new student records
+- 📋 Manage and track fee payments
+- 🌐 Cross-platform support (Android, iOS, Web, Windows, Linux, macOS)
 
-Flutter SDK installed → Install Flutter
-Firebase project set up → Firebase Console
-Android Studio or VS Code
+---
 
-Installation
+## 🛠️ Tech Stack
 
-Clone the repository
+| Technology | Details |
+|---|---|
+| Framework | Flutter |
+| Language | Dart |
+| Backend / Auth | Firebase Authentication + Firestore |
+| State Management | Built-in Flutter State |
 
-bash   git clone https://github.com/Hamzah1507/Fee-Management-App.git
-   cd Fee-Management-App
+---
 
-Install dependencies
+## 🚀 Getting Started
 
-bash   flutter pub get
+### Prerequisites
 
-Run the app
+- Flutter SDK → [Install Flutter](https://docs.flutter.dev/get-started/install)
+- Firebase project → [Firebase Console](https://console.firebase.google.com/)
+- Android Studio or VS Code
 
-bash   flutter run
-📁 Project Structure
+### Installation
+
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/Hamzah1507/Fee-Management-App.git
+cd Fee-Management-App
+```
+
+**2. Install dependencies**
+
+```bash
+flutter pub get
+```
+
+**3. Run the app**
+
+```bash
+flutter run
+```
+
+---
+
+## 📁 Project Structure
+
+```
 lib/
 ├── main.dart
 ├── models/
@@ -49,17 +72,23 @@ lib/
 │   └── add_student_screen.dart
 └── services/
     └── auth_service.dart
-🔧 Firebase Setup
+```
 
-Create a Firebase project at Firebase Console
-Add your Android/iOS app to the Firebase project
-Download and replace google-services.json in android/app/
-Enable Email/Password Authentication in Firebase Console
+---
 
+## 🔧 Firebase Setup
 
-🤝 Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you'd like to change.
-📄 License
-This project is licensed under the MIT License.
+1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+2. Add your Android/iOS app to the Firebase project
+3. Download and replace `google-services.json` in `android/app/`
+4. Enable **Email/Password** Authentication in Firebase Console
 
-Made with ❤️ using Flutter
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+<p align="center">Made with ❤️ using Flutter</p>
