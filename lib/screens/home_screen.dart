@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final FocusNode _searchFocusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
 
-  // ✅ VERY IMPORTANT — dispose inside STATE
+  // ✅ dispose correctly
   @override
   void dispose() {
     _searchFocusNode.dispose();
@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    // ✅ prevents keyboard auto open on screen load
+    // ✅ prevent auto keyboard on screen open
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).unfocus();
     });
@@ -77,7 +77,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     .orderBy('createdAt', descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
@@ -85,17 +86,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     return _emptyState();
                   }
 
-                  // ✅ FILTER LOGIC (THE REAL MAGIC)
+                  // ✅ FILTER LOGIC
                   final filteredDocs = snapshot.data!.docs.where((doc) {
                     final data = doc.data() as Map<String, dynamic>;
                     final name =
                         (data['name'] ?? '').toString().toLowerCase();
                     final course =
                         (data['course'] ?? '').toString().toLowerCase();
-
                     final query = _searchQuery.toLowerCase();
 
-                    return name.contains(query) || course.contains(query);
+                    return name.contains(query) ||
+                        course.contains(query);
                   }).toList();
 
                   if (filteredDocs.isEmpty) {
@@ -147,8 +148,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: TextField(
         controller: _searchController,
         focusNode: _searchFocusNode,
-        autofocus: false, // ✅ prevents auto keyboard
-        onTapOutside: (_) => _searchFocusNode.unfocus(), // ✅ fixes blink
+        autofocus: false,
+        onTapOutside: (_) => _searchFocusNode.unfocus(),
         onChanged: (value) {
           setState(() => _searchQuery = value);
         },
@@ -222,17 +223,24 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Row(
             children: [
-              Expanded(child: _statCard('Students', totalStudents, Colors.blue)),
+              Expanded(
+                  child:
+                      _statCard('Students', totalStudents, Colors.blue)),
               const SizedBox(width: 12),
-              Expanded(child: _statCard('Collected', totalPaid, Colors.green)),
+              Expanded(
+                  child:
+                      _statCard('Collected', totalPaid, Colors.green)),
             ],
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              Expanded(child: _statCard('Total Fees', totalFees, Colors.black)),
+              Expanded(
+                  child:
+                      _statCard('Total Fees', totalFees, Colors.black)),
               const SizedBox(width: 12),
-              Expanded(child: _statCard('Pending', pending, Colors.red)),
+              Expanded(
+                  child: _statCard('Pending', pending, Colors.red)),
             ],
           ),
         ],
@@ -282,6 +290,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ListTile(
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+
+        // ✅ OPEN DETAILS
         onTap: () {
           Navigator.push(
             context,
@@ -290,6 +300,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
+
+        // ✅ LONG PRESS DELETE
+        onLongPress: () => _confirmDelete(context, student),
+
         leading: CircleAvatar(
           backgroundColor: Colors.white,
           child: Text(
@@ -302,6 +316,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+
         title: Text(
           student.name,
           style: const TextStyle(
@@ -309,11 +324,50 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.white,
           ),
         ),
+
         subtitle: Text(
           student.course,
           style: const TextStyle(color: Colors.white70),
         ),
       ),
     );
+  }
+
+  // ================= DELETE =================
+  Future<void> _confirmDelete(
+      BuildContext context, Student student) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Student'),
+        content: Text('Delete ${student.name}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await FirebaseFirestore.instance
+          .collection('students')
+          .doc(student.id)
+          .delete();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Student deleted')),
+        );
+      }
+    }
   }
 }
