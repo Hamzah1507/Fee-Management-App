@@ -19,17 +19,19 @@ dependencies:
   # PDF & Printing
   pdf: ^3.10.1
   printing: ^5.12.0
-  fl_chart: ^0.68.0
-  excel: ^3.0.0
 
+  # Charts
+  fl_chart: ^0.68.0
+
+  # Excel
+  syncfusion_flutter_xlsio: ^25.1.41
+
+  # Sharing
+  share_plus: ^10.0.0
 
   # Other
   path_provider: ^2.0.15
   cupertino_icons: ^1.0.8
-  syncfusion_flutter_xlsio: ^25.1.41
-  share_plus: ^10.0.0
-
-
 
 dev_dependencies:
   flutter_test:
@@ -43,3 +45,18 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/gls_logo.png
+    - assets/images/icon.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icon.png"
+
+flutter_native_splash:
+  color: "#003087"
+  image: assets/images/gls_logo.png
+  color_dark: "#003087"
+  image_dark: assets/images/gls_logo.png
+  android_12:
+    color: "#003087"
+    image: assets/images/gls_logo.png
