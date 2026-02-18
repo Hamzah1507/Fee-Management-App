@@ -26,6 +26,8 @@ dependencies:
   path_provider: ^2.0.15
   cupertino_icons: ^1.0.8
   syncfusion_flutter_xlsio: ^25.1.41
+  share_plus: ^10.0.0
+
 
 
 dev_dependencies:
