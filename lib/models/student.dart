@@ -6,6 +6,7 @@ class Student {
   final String course;
   final int totalFees;
   final int paidFees;
+  final int currentSemester; // NEW
   final DateTime createdAt;
 
   Student({
@@ -14,6 +15,7 @@ class Student {
     required this.course,
     required this.totalFees,
     required this.paidFees,
+    this.currentSemester = 1,
     required this.createdAt,
   });
 
@@ -26,6 +28,7 @@ class Student {
       course: data['course'] ?? '',
       totalFees: data['totalFees'] ?? 0,
       paidFees: data['paidFees'] ?? 0,
+      currentSemester: data['currentSemester'] ?? 1,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -36,6 +39,7 @@ class Student {
       'course': course,
       'totalFees': totalFees,
       'paidFees': paidFees,
+      'currentSemester': currentSemester,
       'createdAt': createdAt,
     };
   }
