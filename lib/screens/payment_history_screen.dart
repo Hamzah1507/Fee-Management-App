@@ -9,9 +9,9 @@ class PaymentHistoryScreen extends StatelessWidget {
 
   // ── Design Tokens ───────────────────────────────────────────
   static const _primary = Color(0xFF1A1F36);
-  static const _accent  = Color(0xFF4F6EF7);
+  static const _accent = Color(0xFF4F6EF7);
   static const _success = Color(0xFF00C48C);
-  static const _bg      = Color(0xFFF4F6FC);
+  static const _bg = Color(0xFFF4F6FC);
   static const _surface = Color(0xFFFFFFFF);
   static const _textSub = Color(0xFF8A94A6);
 
@@ -39,7 +39,8 @@ class PaymentHistoryScreen extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-                child: CircularProgressIndicator(color: _accent));
+              child: CircularProgressIndicator(color: _accent),
+            );
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -47,13 +48,14 @@ class PaymentHistoryScreen extends StatelessWidget {
           }
 
           final payments = snapshot.data!.docs
-              .map((doc) => Payment.fromMap(
-                  doc.id, doc.data() as Map<String, dynamic>))
+              .map(
+                (doc) =>
+                    Payment.fromMap(doc.id, doc.data() as Map<String, dynamic>),
+              )
               .toList();
 
           // Running total
-          final totalPaid =
-              payments.fold<int>(0, (sum, p) => sum + p.amount);
+          final totalPaid = payments.fold<int>(0, (sum, p) => sum + p.amount);
 
           return Column(
             children: [
@@ -63,12 +65,14 @@ class PaymentHistoryScreen extends StatelessWidget {
               // ── Timeline List ──────────────────────────────
               Expanded(
                 child: ListView.builder(
-                  padding:
-                      const EdgeInsets.fromLTRB(20, 8, 20, 30),
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 30),
                   itemCount: payments.length,
                   itemBuilder: (context, index) {
                     return _paymentTile(
-                        payments[index], index, payments.length);
+                      payments[index],
+                      index,
+                      payments.length,
+                    );
                   },
                 ),
               ),
@@ -107,38 +111,47 @@ class PaymentHistoryScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Total Collected',
-                    style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500)),
+                const Text(
+                  'Total Collected',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text('₹$total',
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -1)),
+                Text(
+                  '₹$total',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -1,
+                  ),
+                ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 14, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
               children: [
-                Text('$count',
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800)),
-                const Text('Payments',
-                    style: TextStyle(
-                        color: Colors.white70, fontSize: 11)),
+                Text(
+                  '$count',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const Text(
+                  'Payments',
+                  style: TextStyle(color: Colors.white70, fontSize: 11),
+                ),
               ],
             ),
           ),
@@ -168,8 +181,7 @@ class PaymentHistoryScreen extends StatelessWidget {
                   color: methodInfo.color.withOpacity(.12),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(methodInfo.icon,
-                    size: 17, color: methodInfo.color),
+                child: Icon(methodInfo.icon, size: 17, color: methodInfo.color),
               ),
               if (!isLast)
                 Expanded(
@@ -190,8 +202,7 @@ class PaymentHistoryScreen extends StatelessWidget {
           // ── Card ────────────────────────────────────────────
           Expanded(
             child: Container(
-              margin: EdgeInsets.only(
-                  bottom: isLast ? 0 : 16),
+              margin: EdgeInsets.only(bottom: isLast ? 0 : 16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: _surface,
@@ -221,7 +232,9 @@ class PaymentHistoryScreen extends StatelessWidget {
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: methodInfo.color.withOpacity(.10),
                           borderRadius: BorderRadius.circular(20),
@@ -229,16 +242,19 @@ class PaymentHistoryScreen extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(methodInfo.icon,
-                                size: 12,
-                                color: methodInfo.color),
+                            Icon(
+                              methodInfo.icon,
+                              size: 12,
+                              color: methodInfo.color,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               methodInfo.label,
                               style: TextStyle(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: methodInfo.color),
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w700,
+                                color: methodInfo.color,
+                              ),
                             ),
                           ],
                         ),
@@ -251,15 +267,19 @@ class PaymentHistoryScreen extends StatelessWidget {
                   // Date + time
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today_rounded,
-                          size: 12, color: _textSub),
+                      const Icon(
+                        Icons.calendar_today_rounded,
+                        size: 12,
+                        color: _textSub,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         _formatDateTime(p.createdAt),
                         style: const TextStyle(
-                            fontSize: 12,
-                            color: _textSub,
-                            fontWeight: FontWeight.w500),
+                          fontSize: 12,
+                          color: _textSub,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
@@ -279,31 +299,41 @@ class PaymentHistoryScreen extends StatelessWidget {
     switch (method.toLowerCase()) {
       case 'upi':
         return _MethodInfo(
-            Icons.phone_android_rounded,
-            const Color(0xFF7C3AED),
-            'UPI');
+          Icons.phone_android_rounded,
+          const Color(0xFF7C3AED),
+          'UPI',
+        );
       case 'bank':
       case 'bank transfer':
         return _MethodInfo(
-            Icons.account_balance_rounded,
-            const Color(0xFF0284C7),
-            'Bank');
+          Icons.account_balance_rounded,
+          const Color(0xFF0284C7),
+          'Bank',
+        );
       default:
-        return _MethodInfo(
-            Icons.payments_rounded,
-            _success,
-            'Cash');
+        return _MethodInfo(Icons.payments_rounded, _success, 'Cash');
     }
   }
 
   String _formatDateTime(DateTime d) {
     final months = [
-      '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final hour = d.hour > 12 ? d.hour - 12 : d.hour;
     final ampm = d.hour >= 12 ? 'PM' : 'AM';
-    final min  = d.minute.toString().padLeft(2, '0');
+    final min = d.minute.toString().padLeft(2, '0');
     return '${d.day} ${months[d.month]} ${d.year}  •  $hour:$min $ampm';
   }
 
@@ -319,18 +349,26 @@ class PaymentHistoryScreen extends StatelessWidget {
               color: _accent.withOpacity(.08),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Icon(Icons.receipt_long_rounded,
-                size: 36, color: _accent),
+            child: const Icon(
+              Icons.receipt_long_rounded,
+              size: 36,
+              color: _accent,
+            ),
           ),
           const SizedBox(height: 16),
-          const Text('No payments yet',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: _primary)),
+          const Text(
+            'No payments yet',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: _primary,
+            ),
+          ),
           const SizedBox(height: 6),
-          const Text('Payments will appear here once collected.',
-              style: TextStyle(color: _textSub, fontSize: 13)),
+          const Text(
+            'Payments will appear here once collected.',
+            style: TextStyle(color: _textSub, fontSize: 13),
+          ),
         ],
       ),
     );

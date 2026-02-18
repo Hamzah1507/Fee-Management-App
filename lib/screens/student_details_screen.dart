@@ -11,10 +11,10 @@ class StudentDetailsScreen extends StatelessWidget {
   const StudentDetailsScreen({super.key, required this.student});
 
   static const _primary = Color(0xFF1A1F36);
-  static const _accent  = Color(0xFF4F6EF7);
+  static const _accent = Color(0xFF4F6EF7);
   static const _success = Color(0xFF00C48C);
-  static const _danger  = Color(0xFFFF5B5B);
-  static const _bg      = Color(0xFFF4F6FC);
+  static const _danger = Color(0xFFFF5B5B);
+  static const _bg = Color(0xFFF4F6FC);
   static const _surface = Color(0xFFFFFFFF);
   static const _textSub = Color(0xFF8A94A6);
 
@@ -31,15 +31,18 @@ class StudentDetailsScreen extends StatelessWidget {
         elevation: 0,
         foregroundColor: _primary,
         centerTitle: true,
-        title: const Text('Student Details',
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17)),
+        title: const Text(
+          'Student Details',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17),
+        ),
       ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: studentRef.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-                child: CircularProgressIndicator(color: _accent));
+              child: CircularProgressIndicator(color: _accent),
+            );
           }
           if (!snapshot.hasData || !snapshot.data!.exists) {
             return const Center(child: Text('Student not found'));
@@ -55,19 +58,27 @@ class StudentDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context, Student s) {
-    final pct =
-        s.totalFees > 0 ? (s.paidFees / s.totalFees).clamp(0.0, 1.0) : 0.0;
-    final initials = s.name.trim().split(' ').take(2)
-        .map((e) => e[0].toUpperCase()).join();
+    final pct = s.totalFees > 0
+        ? (s.paidFees / s.totalFees).clamp(0.0, 1.0)
+        : 0.0;
+    final initials = s.name
+        .trim()
+        .split(' ')
+        .take(2)
+        .map((e) => e[0].toUpperCase())
+        .join();
 
     Color statusColor;
     String statusText;
     if (s.pendingFees == 0) {
-      statusColor = _success; statusText = 'Fully Paid';
+      statusColor = _success;
+      statusText = 'Fully Paid';
     } else if (s.paidFees == 0) {
-      statusColor = _danger; statusText = 'Not Paid';
+      statusColor = _danger;
+      statusText = 'Not Paid';
     } else {
-      statusColor = const Color(0xFFFFA940); statusText = 'Partial';
+      statusColor = const Color(0xFFFFA940);
+      statusText = 'Partial';
     }
 
     return SingleChildScrollView(
@@ -75,61 +86,87 @@ class StudentDetailsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           // ── Profile Hero ─────────────────────────────────────
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: _surface,
               borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(
+              boxShadow: [
+                BoxShadow(
                   color: _primary.withOpacity(.06),
-                  blurRadius: 16, offset: const Offset(0, 4))],
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Row(
               children: [
                 Container(
-                  width: 60, height: 60,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
-                      color: _accent.withOpacity(.12),
-                      borderRadius: BorderRadius.circular(16)),
-                  child: Center(child: Text(initials,
+                    color: _accent.withOpacity(.12),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: Text(
+                      initials,
                       style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 20, color: _accent))),
+                        fontWeight: FontWeight.w800,
+                        fontSize: 20,
+                        color: _accent,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(s.name, style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w800,
-                          color: _primary)),
+                      Text(
+                        s.name,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: _primary,
+                        ),
+                      ),
                       const SizedBox(height: 4),
-                      Text(s.course,
-                          style: const TextStyle(
-                              fontSize: 13.5, color: _textSub)),
+                      Text(
+                        s.course,
+                        style: const TextStyle(fontSize: 13.5, color: _textSub),
+                      ),
                       const SizedBox(height: 4),
-                      Text('Semester ${s.currentSemester}',
-                          style: const TextStyle(
-                              fontSize: 12,
-                              color: _accent,
-                              fontWeight: FontWeight.w600)),
+                      Text(
+                        'Semester ${s.currentSemester}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: _accent,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 6),
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                      color: statusColor.withOpacity(.10),
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Text(statusText,
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: statusColor)),
+                    color: statusColor.withOpacity(.10),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    statusText,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: statusColor,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -142,44 +179,61 @@ class StudentDetailsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF3A56E8), Color(0xFF6A3DE8)]),
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF3A56E8), Color(0xFF6A3DE8)],
+              ),
               borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(
+              boxShadow: [
+                BoxShadow(
                   color: _accent.withOpacity(.30),
-                  blurRadius: 20, offset: const Offset(0, 8))],
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Fee Summary',
-                    style: TextStyle(
-                        color: Colors.white70, fontSize: 12.5,
-                        fontWeight: FontWeight.w500, letterSpacing: .4)),
+                const Text(
+                  'Fee Summary',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: .4,
+                  ),
+                ),
                 const SizedBox(height: 12),
-                Row(children: [
-                  _summaryItem('Total', '₹${s.totalFees}', Colors.white),
-                  _summaryItem('Paid', '₹${s.paidFees}',
-                      const Color(0xFF7EFFD4)),
-                  _summaryItem('Pending', '₹${s.pendingFees}',
-                      const Color(0xFFFFADAD)),
-                ]),
+                Row(
+                  children: [
+                    _summaryItem('Total', '₹${s.totalFees}', Colors.white),
+                    _summaryItem(
+                      'Paid',
+                      '₹${s.paidFees}',
+                      const Color(0xFF7EFFD4),
+                    ),
+                    _summaryItem(
+                      'Pending',
+                      '₹${s.pendingFees}',
+                      const Color(0xFFFFADAD),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 16),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: LinearProgressIndicator(
-                    value: pct, minHeight: 7,
+                    value: pct,
+                    minHeight: 7,
                     backgroundColor: Colors.white.withOpacity(.2),
-                    valueColor:
-                        const AlwaysStoppedAnimation(Colors.white),
+                    valueColor: const AlwaysStoppedAnimation(Colors.white),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   '${(pct * 100).toStringAsFixed(1)}% of total fees collected',
-                  style: const TextStyle(
-                      color: Colors.white70, fontSize: 11.5),
+                  style: const TextStyle(color: Colors.white70, fontSize: 11.5),
                 ),
               ],
             ),
@@ -197,56 +251,82 @@ class StudentDetailsScreen extends StatelessWidget {
               final count = snap.data?.docs.length ?? 0;
               final lastPay = snap.hasData && snap.data!.docs.isNotEmpty
                   ? (snap.data!.docs.first.data()
-                          as Map<String, dynamic>)['createdAt']
-                      as Timestamp?
+                            as Map<String, dynamic>)['createdAt']
+                        as Timestamp?
                   : null;
               final lastDate = lastPay != null
                   ? _fmtDate(lastPay.toDate())
                   : '—';
-              return Row(children: [
-                Expanded(child: _quickStat(
-                    Icons.receipt_long_rounded, '$count',
-                    'Transactions',
-                    const Color(0xFFEEF2FF), _accent)),
-                const SizedBox(width: 12),
-                Expanded(child: _quickStat(
-                    Icons.calendar_today_rounded, lastDate,
-                    'Last Payment',
-                    const Color(0xFFF0FFF8), _success)),
-              ]);
+              return Row(
+                children: [
+                  Expanded(
+                    child: _quickStat(
+                      Icons.receipt_long_rounded,
+                      '$count',
+                      'Transactions',
+                      const Color(0xFFEEF2FF),
+                      _accent,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _quickStat(
+                      Icons.calendar_today_rounded,
+                      lastDate,
+                      'Last Payment',
+                      const Color(0xFFF0FFF8),
+                      _success,
+                    ),
+                  ),
+                ],
+              );
             },
           ),
 
           const SizedBox(height: 24),
 
           // ── Action Buttons ────────────────────────────────────
-          const Text('Actions',
-              style: TextStyle(
-                  fontSize: 15, fontWeight: FontWeight.w700,
-                  color: _primary)),
+          const Text(
+            'Actions',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: _primary,
+            ),
+          ),
           const SizedBox(height: 12),
 
           // Collect Fee — primary
-          _actionButton(context,
-              icon: Icons.add_card_rounded,
-              label: 'Collect Fee',
-              bg: _accent, fg: Colors.white, border: _accent,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(
-                      builder: (_) => CollectFeeScreen(student: s)))),
+          _actionButton(
+            context,
+            icon: Icons.add_card_rounded,
+            label: 'Collect Fee',
+            bg: _accent,
+            fg: Colors.white,
+            border: _accent,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => CollectFeeScreen(student: s)),
+            ),
+          ),
 
           const SizedBox(height: 10),
 
           // View History
-          _actionButton(context,
-              icon: Icons.history_rounded,
-              label: 'View Payment History',
-              bg: _surface, fg: _primary,
-              border: const Color(0xFFE2E6F0),
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(
-                      builder: (_) =>
-                          PaymentHistoryScreen(student: s)))),
+          _actionButton(
+            context,
+            icon: Icons.history_rounded,
+            label: 'View Payment History',
+            bg: _surface,
+            fg: _primary,
+            border: const Color(0xFFE2E6F0),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => PaymentHistoryScreen(student: s),
+              ),
+            ),
+          ),
 
           const SizedBox(height: 10),
 
@@ -259,25 +339,28 @@ class StudentDetailsScreen extends StatelessWidget {
                 .limit(1)
                 .snapshots(),
             builder: (context, snap) {
-              final hasPayments =
-                  snap.hasData && snap.data!.docs.isNotEmpty;
-              return _actionButton(context,
-                  icon: Icons.picture_as_pdf_rounded,
-                  label: 'Download Last Receipt',
-                  bg: const Color(0xFFFFF3F3),
-                  fg: _danger,
-                  border: _danger.withOpacity(.3),
-                  onTap: hasPayments
-                      ? () async {
-                          final doc = snap.data!.docs.first;
-                          final payment = Payment.fromMap(
-                            doc.id,
-                            doc.data() as Map<String, dynamic>,
-                          );
-                          await ReceiptService.generateReceipt(
-                              student: s, payment: payment);
-                        }
-                      : null);
+              final hasPayments = snap.hasData && snap.data!.docs.isNotEmpty;
+              return _actionButton(
+                context,
+                icon: Icons.picture_as_pdf_rounded,
+                label: 'Download Last Receipt',
+                bg: const Color(0xFFFFF3F3),
+                fg: _danger,
+                border: _danger.withOpacity(.3),
+                onTap: hasPayments
+                    ? () async {
+                        final doc = snap.data!.docs.first;
+                        final payment = Payment.fromMap(
+                          doc.id,
+                          doc.data() as Map<String, dynamic>,
+                        );
+                        await ReceiptService.generateReceipt(
+                          student: s,
+                          payment: payment,
+                        );
+                      }
+                    : null,
+              );
             },
           ),
 
@@ -291,27 +374,31 @@ class StudentDetailsScreen extends StatelessWidget {
                 .orderBy('createdAt', descending: true)
                 .snapshots(),
             builder: (context, snap) {
-              final hasPayments =
-                  snap.hasData && snap.data!.docs.isNotEmpty;
-              return _actionButton(context,
-                  icon: Icons.summarize_rounded,
-                  label: 'Full Semester Report (PDF)',
-                  bg: const Color(0xFFEEF2FF),
-                  fg: _accent,
-                  border: _accent.withOpacity(.3),
-                  onTap: hasPayments
-                      ? () async {
-                          final payments = snap.data!.docs
-                              .map((doc) => Payment.fromMap(
-                                    doc.id,
-                                    doc.data()
-                                        as Map<String, dynamic>,
-                                  ))
-                              .toList();
-                          await ReceiptService.generateSemesterReport(
-                              student: s, payments: payments);
-                        }
-                      : null);
+              final hasPayments = snap.hasData && snap.data!.docs.isNotEmpty;
+              return _actionButton(
+                context,
+                icon: Icons.summarize_rounded,
+                label: 'Full Semester Report (PDF)',
+                bg: const Color(0xFFEEF2FF),
+                fg: _accent,
+                border: _accent.withOpacity(.3),
+                onTap: hasPayments
+                    ? () async {
+                        final payments = snap.data!.docs
+                            .map(
+                              (doc) => Payment.fromMap(
+                                doc.id,
+                                doc.data() as Map<String, dynamic>,
+                              ),
+                            )
+                            .toList();
+                        await ReceiptService.generateSemesterReport(
+                          student: s,
+                          payments: payments,
+                        );
+                      }
+                    : null,
+              );
             },
           ),
         ],
@@ -324,58 +411,81 @@ class StudentDetailsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: const TextStyle(
-                  color: Colors.white60, fontSize: 11.5)),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white60, fontSize: 11.5),
+          ),
           const SizedBox(height: 4),
-          Text(value,
-              style: TextStyle(
-                  color: color,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800)),
+          Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _quickStat(IconData icon, String value, String label,
-      Color bg, Color color) {
+  Widget _quickStat(
+    IconData icon,
+    String value,
+    String label,
+    Color bg,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: _surface,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(
+        boxShadow: [
+          BoxShadow(
             color: _primary.withOpacity(.05),
-            blurRadius: 10, offset: const Offset(0, 3))],
-      ),
-      child: Row(children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-              color: bg, borderRadius: BorderRadius.circular(10)),
-          child: Icon(icon, size: 18, color: color),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w700,
-                      color: _primary)),
-              Text(label,
-                  style: const TextStyle(
-                      fontSize: 11, color: _textSub)),
-            ],
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
-        ),
-      ]),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 18, color: color),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: _primary,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: const TextStyle(fontSize: 11, color: _textSub),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _actionButton(BuildContext context, {
+  Widget _actionButton(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required Color bg,
@@ -388,20 +498,20 @@ class StudentDetailsScreen extends StatelessWidget {
       height: 52,
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
-          backgroundColor: onTap == null
-              ? bg.withOpacity(.5)
-              : bg,
+          backgroundColor: onTap == null ? bg.withOpacity(.5) : bg,
           foregroundColor: fg,
           elevation: 0,
           side: BorderSide(color: border, width: 1.5),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14)),
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
         onPressed: onTap,
         icon: Icon(icon, size: 20),
-        label: Text(label,
-            style: const TextStyle(
-                fontWeight: FontWeight.w600, fontSize: 15)),
+        label: Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+        ),
       ),
     );
   }

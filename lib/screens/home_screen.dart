@@ -22,13 +22,13 @@ class _HomeScreenState extends State<HomeScreen>
   late AnimationController _fabAnimController;
 
   // ── Design Tokens ──────────────────────────────────────────
-  static const _primary = Color(0xFF1A1F36);       // deep navy
-  static const _accent  = Color(0xFF4F6EF7);       // electric blue
-  static const _success = Color(0xFF00C48C);       // emerald
-  static const _warning = Color(0xFFFFA940);       // amber
-  static const _danger  = Color(0xFFFF5B5B);       // coral red
+  static const _primary = Color(0xFF1A1F36); // deep navy
+  static const _accent = Color(0xFF4F6EF7); // electric blue
+  static const _success = Color(0xFF00C48C); // emerald
+  static const _warning = Color(0xFFFFA940); // amber
+  static const _danger = Color(0xFFFF5B5B); // coral red
   static const _surface = Color(0xFFFFFFFF);
-  static const _bg      = Color(0xFFF4F6FC);
+  static const _bg = Color(0xFFF4F6FC);
   static const _textSub = Color(0xFF8A94A6);
 
   @override
@@ -113,10 +113,12 @@ class _HomeScreenState extends State<HomeScreen>
 
                     final filteredDocs = snapshot.data!.docs.where((doc) {
                       final data = doc.data() as Map<String, dynamic>;
-                      final name =
-                          (data['name'] ?? '').toString().toLowerCase();
-                      final course =
-                          (data['course'] ?? '').toString().toLowerCase();
+                      final name = (data['name'] ?? '')
+                          .toString()
+                          .toLowerCase();
+                      final course = (data['course'] ?? '')
+                          .toString()
+                          .toLowerCase();
                       final query = _searchQuery.toLowerCase();
                       return name.contains(query) || course.contains(query);
                     }).toList();
@@ -126,11 +128,16 @@ class _HomeScreenState extends State<HomeScreen>
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.search_off_rounded,
-                                size: 48, color: _textSub.withOpacity(.5)),
+                            Icon(
+                              Icons.search_off_rounded,
+                              size: 48,
+                              color: _textSub.withOpacity(.5),
+                            ),
                             const SizedBox(height: 12),
-                            const Text('No matching students',
-                                style: TextStyle(color: _textSub)),
+                            const Text(
+                              'No matching students',
+                              style: TextStyle(color: _textSub),
+                            ),
                           ],
                         ),
                       );
@@ -165,7 +172,8 @@ class _HomeScreenState extends State<HomeScreen>
           backgroundColor: _accent,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16)),
+            borderRadius: BorderRadius.circular(16),
+          ),
           onPressed: () {
             Navigator.push(
               context,
@@ -186,8 +194,9 @@ class _HomeScreenState extends State<HomeScreen>
   // HEADER
   // ═══════════════════════════════════════════════════════════
   Widget _buildHeader() {
-    final displayName =
-        _userName.isNotEmpty ? _userName.split(' ').first : 'There';
+    final displayName = _userName.isNotEmpty
+        ? _userName.split(' ').first
+        : 'There';
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -223,8 +232,7 @@ class _HomeScreenState extends State<HomeScreen>
           GestureDetector(
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (_) => const AnalyticsScreen()),
+              MaterialPageRoute(builder: (_) => const AnalyticsScreen()),
             ),
             child: Container(
               width: 42,
@@ -233,8 +241,11 @@ class _HomeScreenState extends State<HomeScreen>
                 color: _accent.withOpacity(.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.bar_chart_rounded,
-                  color: _accent, size: 22),
+              child: const Icon(
+                Icons.bar_chart_rounded,
+                color: _accent,
+                size: 22,
+              ),
             ),
           ),
         ],
@@ -267,20 +278,26 @@ class _HomeScreenState extends State<HomeScreen>
           onTapOutside: (_) => _searchFocusNode.unfocus(),
           onChanged: (v) => setState(() => _searchQuery = v),
           style: const TextStyle(
-              fontSize: 14.5,
-              color: _primary,
-              fontWeight: FontWeight.w500),
+            fontSize: 14.5,
+            color: _primary,
+            fontWeight: FontWeight.w500,
+          ),
           decoration: InputDecoration(
             hintText: 'Search by name or course…',
-            hintStyle:
-                const TextStyle(color: _textSub, fontSize: 14),
-            prefixIcon: const Icon(Icons.search_rounded,
-                color: _textSub, size: 22),
+            hintStyle: const TextStyle(color: _textSub, fontSize: 14),
+            prefixIcon: const Icon(
+              Icons.search_rounded,
+              color: _textSub,
+              size: 22,
+            ),
             suffixIcon: _searchQuery.isEmpty
                 ? null
                 : IconButton(
-                    icon: const Icon(Icons.cancel_rounded,
-                        color: _textSub, size: 20),
+                    icon: const Icon(
+                      Icons.cancel_rounded,
+                      color: _textSub,
+                      size: 20,
+                    ),
                     onPressed: () {
                       _searchController.clear();
                       setState(() => _searchQuery = '');
@@ -288,8 +305,7 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
             filled: true,
             fillColor: Colors.transparent,
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide.none,
@@ -315,8 +331,9 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     final pending = totalFees - totalPaid;
-    final progress =
-        totalFees > 0 ? (totalPaid / totalFees).clamp(0.0, 1.0) : 0.0;
+    final progress = totalFees > 0
+        ? (totalPaid / totalFees).clamp(0.0, 1.0)
+        : 0.0;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -348,15 +365,18 @@ class _HomeScreenState extends State<HomeScreen>
                     const Text(
                       'Total Collected',
                       style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: .3),
+                        color: Colors.white70,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: .3,
+                      ),
                     ),
                     const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(.15),
                         borderRadius: BorderRadius.circular(20),
@@ -364,9 +384,10 @@ class _HomeScreenState extends State<HomeScreen>
                       child: Text(
                         '$totalStudents Students',
                         style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w600),
+                          color: Colors.white,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -396,9 +417,10 @@ class _HomeScreenState extends State<HomeScreen>
                 Text(
                   '${(progress * 100).toStringAsFixed(1)}% of ₹${_fmt(totalFees)} collected',
                   style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500),
+                    color: Colors.white70,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
@@ -410,20 +432,22 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               Expanded(
                 child: _miniStat(
-                    'Total Fees',
-                    '₹${_fmt(totalFees)}',
-                    Icons.receipt_long_rounded,
-                    const Color(0xFFEEF2FF),
-                    _accent),
+                  'Total Fees',
+                  '₹${_fmt(totalFees)}',
+                  Icons.receipt_long_rounded,
+                  const Color(0xFFEEF2FF),
+                  _accent,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _miniStat(
-                    'Pending',
-                    '₹${_fmt(pending)}',
-                    Icons.hourglass_top_rounded,
-                    const Color(0xFFFFF3F3),
-                    _danger),
+                  'Pending',
+                  '₹${_fmt(pending)}',
+                  Icons.hourglass_top_rounded,
+                  const Color(0xFFFFF3F3),
+                  _danger,
+                ),
               ),
             ],
           ),
@@ -434,12 +458,17 @@ class _HomeScreenState extends State<HomeScreen>
 
   String _fmt(int v) {
     if (v >= 100000) return '${(v / 100000).toStringAsFixed(1)}L';
-    if (v >= 1000)   return '${(v / 1000).toStringAsFixed(1)}K';
+    if (v >= 1000) return '${(v / 1000).toStringAsFixed(1)}K';
     return '$v';
   }
 
   Widget _miniStat(
-      String label, String value, IconData icon, Color bg, Color color) {
+    String label,
+    String value,
+    IconData icon,
+    Color bg,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
@@ -467,17 +496,23 @@ class _HomeScreenState extends State<HomeScreen>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: const TextStyle(
-                      fontSize: 11.5,
-                      color: _textSub,
-                      fontWeight: FontWeight.w500)),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  color: _textSub,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               const SizedBox(height: 2),
-              Text(value,
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: color)),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                ),
+              ),
             ],
           ),
         ],
@@ -508,22 +543,22 @@ class _HomeScreenState extends State<HomeScreen>
   // ═══════════════════════════════════════════════════════════
   Color _statusColor(Student s) {
     if (s.pendingFees == 0) return _success;
-    if (s.isOverdue)        return _danger;
-    if (s.paidFees == 0)    return _danger;
+    if (s.isOverdue) return _danger;
+    if (s.paidFees == 0) return _danger;
     return _warning;
   }
 
   String _statusText(Student s) {
     if (s.pendingFees == 0) return 'Paid';
-    if (s.isOverdue)        return 'Overdue';
-    if (s.paidFees == 0)    return 'Pending';
+    if (s.isOverdue) return 'Overdue';
+    if (s.paidFees == 0) return 'Pending';
     return 'Partial';
   }
 
   IconData _statusIcon(Student s) {
     if (s.pendingFees == 0) return Icons.check_circle_rounded;
-    if (s.isOverdue)        return Icons.warning_rounded;
-    if (s.paidFees == 0)    return Icons.cancel_rounded;
+    if (s.isOverdue) return Icons.warning_rounded;
+    if (s.paidFees == 0) return Icons.cancel_rounded;
     return Icons.timelapse_rounded;
   }
 
@@ -531,17 +566,17 @@ class _HomeScreenState extends State<HomeScreen>
   // STUDENT CARD
   // ═══════════════════════════════════════════════════════════
   Widget _studentCard(BuildContext context, Student student) {
-    final color  = _statusColor(student);
-    final pct    = student.totalFees > 0
+    final color = _statusColor(student);
+    final pct = student.totalFees > 0
         ? (student.paidFees / student.totalFees).clamp(0.0, 1.0)
         : 0.0;
     final initials = student.name.isNotEmpty
         ? student.name
-            .trim()
-            .split(' ')
-            .take(2)
-            .map((e) => e[0].toUpperCase())
-            .join()
+              .trim()
+              .split(' ')
+              .take(2)
+              .map((e) => e[0].toUpperCase())
+              .join()
         : '?';
 
     return Container(
@@ -565,7 +600,8 @@ class _HomeScreenState extends State<HomeScreen>
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (_) => StudentDetailsScreen(student: student)),
+              builder: (_) => StudentDetailsScreen(student: student),
+            ),
           ),
           onLongPress: () => _confirmDelete(context, student),
           child: Padding(
@@ -612,9 +648,10 @@ class _HomeScreenState extends State<HomeScreen>
                           Text(
                             student.course,
                             style: const TextStyle(
-                                fontSize: 12.5,
-                                color: _textSub,
-                                fontWeight: FontWeight.w500),
+                              fontSize: 12.5,
+                              color: _textSub,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
@@ -623,7 +660,9 @@ class _HomeScreenState extends State<HomeScreen>
                     // Status badge
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: color.withOpacity(.10),
                         borderRadius: BorderRadius.circular(20),
@@ -631,8 +670,7 @@ class _HomeScreenState extends State<HomeScreen>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(_statusIcon(student),
-                              size: 12, color: color),
+                          Icon(_statusIcon(student), size: 12, color: color),
                           const SizedBox(width: 4),
                           Text(
                             _statusText(student),
@@ -655,25 +693,30 @@ class _HomeScreenState extends State<HomeScreen>
                 if (student.isOverdue) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 6),
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     margin: const EdgeInsets.only(bottom: 10),
                     decoration: BoxDecoration(
                       color: _danger.withOpacity(.08),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color: _danger.withOpacity(.2)),
+                      border: Border.all(color: _danger.withOpacity(.2)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.alarm_rounded,
-                            size: 13, color: _danger),
+                        const Icon(
+                          Icons.alarm_rounded,
+                          size: 13,
+                          color: _danger,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           '${student.daysOverdue} day${student.daysOverdue == 1 ? '' : 's'} overdue — Due: ${_fmtDate(student.dueDate!)}',
                           style: const TextStyle(
-                              fontSize: 11.5,
-                              color: _danger,
-                              fontWeight: FontWeight.w600),
+                            fontSize: 11.5,
+                            color: _danger,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
@@ -682,25 +725,30 @@ class _HomeScreenState extends State<HomeScreen>
                     student.pendingFees > 0) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 6),
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     margin: const EdgeInsets.only(bottom: 10),
                     decoration: BoxDecoration(
                       color: _warning.withOpacity(.08),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color: _warning.withOpacity(.2)),
+                      border: Border.all(color: _warning.withOpacity(.2)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.calendar_today_rounded,
-                            size: 13, color: _warning),
+                        const Icon(
+                          Icons.calendar_today_rounded,
+                          size: 13,
+                          color: _warning,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'Due: ${_fmtDate(student.dueDate!)}',
                           style: const TextStyle(
-                              fontSize: 11.5,
-                              color: _warning,
-                              fontWeight: FontWeight.w600),
+                            fontSize: 11.5,
+                            color: _warning,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
@@ -716,16 +764,18 @@ class _HomeScreenState extends State<HomeScreen>
                         Text(
                           '₹${student.paidFees} paid',
                           style: const TextStyle(
-                              fontSize: 11.5,
-                              color: _textSub,
-                              fontWeight: FontWeight.w500),
+                            fontSize: 11.5,
+                            color: _textSub,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                         Text(
                           '₹${student.pendingFees} due',
                           style: TextStyle(
-                              fontSize: 11.5,
-                              color: _danger.withOpacity(.8),
-                              fontWeight: FontWeight.w600),
+                            fontSize: 11.5,
+                            color: _danger.withOpacity(.8),
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
@@ -752,15 +802,15 @@ class _HomeScreenState extends State<HomeScreen>
   // ═══════════════════════════════════════════════════════════
   // DELETE DIALOG
   // ═══════════════════════════════════════════════════════════
-  Future<void> _confirmDelete(
-      BuildContext context, Student student) async {
+  Future<void> _confirmDelete(BuildContext context, Student student) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Delete Student',
-            style: TextStyle(fontWeight: FontWeight.w700)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Delete Student',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
         content: Text(
           'Are you sure you want to delete "${student.name}"? This action cannot be undone.',
           style: const TextStyle(color: _textSub, height: 1.4),
@@ -768,15 +818,15 @@ class _HomeScreenState extends State<HomeScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel',
-                style: TextStyle(color: _textSub)),
+            child: const Text('Cancel', style: TextStyle(color: _textSub)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: _danger,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                borderRadius: BorderRadius.circular(10),
+              ),
               elevation: 0,
             ),
             onPressed: () => Navigator.pop(ctx, true),
@@ -798,8 +848,9 @@ class _HomeScreenState extends State<HomeScreen>
             content: const Text('Student deleted'),
             backgroundColor: _danger,
             behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -822,8 +873,7 @@ class _HomeScreenState extends State<HomeScreen>
               color: _accent.withOpacity(.08),
               borderRadius: BorderRadius.circular(24),
             ),
-            child: const Icon(Icons.school_rounded,
-                size: 40, color: _accent),
+            child: const Icon(Icons.school_rounded, size: 40, color: _accent),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -846,8 +896,19 @@ class _HomeScreenState extends State<HomeScreen>
 
   String _fmtDate(DateTime d) {
     const months = [
-      '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${d.day} ${months[d.month]} ${d.year}';
   }

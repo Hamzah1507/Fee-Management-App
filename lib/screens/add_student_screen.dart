@@ -11,18 +11,18 @@ class AddStudentScreen extends StatefulWidget {
 
 class _AddStudentScreenState extends State<AddStudentScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController   = TextEditingController();
+  final _nameController = TextEditingController();
   final _courseController = TextEditingController();
-  final _feesController   = TextEditingController();
+  final _feesController = TextEditingController();
 
   DateTime? _dueDate;
   bool _loading = false;
 
   // ── Design Tokens ───────────────────────────────────────────
   static const _primary = Color(0xFF1A1F36);
-  static const _accent  = Color(0xFF4F6EF7);
-  static const _danger  = Color(0xFFFF5B5B);
-  static const _bg      = Color(0xFFF4F6FC);
+  static const _accent = Color(0xFF4F6EF7);
+  static const _danger = Color(0xFFFF5B5B);
+  static const _bg = Color(0xFFF4F6FC);
   static const _surface = Color(0xFFFFFFFF);
   static const _textSub = Color(0xFF8A94A6);
 
@@ -63,8 +63,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     setState(() => _loading = true);
 
     try {
-      final docRef =
-          FirebaseFirestore.instance.collection('students').doc();
+      final docRef = FirebaseFirestore.instance.collection('students').doc();
 
       final student = Student(
         id: docRef.id,
@@ -91,15 +90,16 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
             backgroundColor: _accent,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
+              borderRadius: BorderRadius.circular(12),
+            ),
             margin: const EdgeInsets.all(16),
           ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
 
     if (mounted) setState(() => _loading = false);
@@ -114,9 +114,10 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
         elevation: 0,
         foregroundColor: _primary,
         centerTitle: true,
-        title: const Text('Add Student',
-            style:
-                TextStyle(fontWeight: FontWeight.w700, fontSize: 17)),
+        title: const Text(
+          'Add Student',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -126,7 +127,6 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 // ── Avatar Icon ──────────────────────────────
                 Center(
                   child: Container(
@@ -136,8 +136,11 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                       color: _accent.withOpacity(.10),
                       borderRadius: BorderRadius.circular(22),
                     ),
-                    child: const Icon(Icons.school_rounded,
-                        size: 40, color: _accent),
+                    child: const Icon(
+                      Icons.school_rounded,
+                      size: 40,
+                      color: _accent,
+                    ),
                   ),
                 ),
 
@@ -163,9 +166,8 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                   controller: _courseController,
                   label: 'Course / Program',
                   icon: Icons.menu_book_outlined,
-                  validator: (v) => v == null || v.trim().isEmpty
-                      ? 'Enter course'
-                      : null,
+                  validator: (v) =>
+                      v == null || v.trim().isEmpty ? 'Enter course' : null,
                 ),
 
                 const SizedBox(height: 12),
@@ -219,17 +221,14 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                           ),
                           child: Icon(
                             Icons.calendar_month_rounded,
-                            color: _dueDate != null
-                                ? _accent
-                                : _textSub,
+                            color: _dueDate != null ? _accent : _textSub,
                             size: 20,
                           ),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 _dueDate != null
@@ -237,9 +236,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                                     : 'Set Fee Due Date (Optional)',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: _dueDate != null
-                                      ? _textSub
-                                      : _textSub,
+                                  color: _dueDate != null ? _textSub : _textSub,
                                 ),
                               ),
                               if (_dueDate != null) ...[
@@ -258,16 +255,18 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                         ),
                         if (_dueDate != null)
                           GestureDetector(
-                            onTap: () =>
-                                setState(() => _dueDate = null),
+                            onTap: () => setState(() => _dueDate = null),
                             child: const Icon(
-                                Icons.cancel_rounded,
-                                color: _textSub,
-                                size: 20),
+                              Icons.cancel_rounded,
+                              color: _textSub,
+                              size: 20,
+                            ),
                           )
                         else
-                          const Icon(Icons.chevron_right_rounded,
-                              color: _textSub),
+                          const Icon(
+                            Icons.chevron_right_rounded,
+                            color: _textSub,
+                          ),
                       ],
                     ),
                   ),
@@ -278,21 +277,28 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                   const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8),
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: _accent.withOpacity(.06),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.info_outline_rounded,
-                            size: 14, color: _accent),
+                        const Icon(
+                          Icons.info_outline_rounded,
+                          size: 14,
+                          color: _accent,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             'Student will be marked OVERDUE if fees are unpaid after ${_formatDate(_dueDate!)}',
                             style: const TextStyle(
-                                fontSize: 11.5, color: _accent),
+                              fontSize: 11.5,
+                              color: _accent,
+                            ),
                           ),
                         ),
                       ],
@@ -313,7 +319,8 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                       elevation: 4,
                       shadowColor: _accent.withOpacity(.4),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
                     onPressed: _loading ? null : _saveStudent,
                     child: _loading
@@ -321,14 +328,16 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                             width: 22,
                             height: 22,
                             child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.5),
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
                           )
                         : const Text(
                             'Save Student',
                             style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                   ),
                 ),
@@ -342,13 +351,14 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
   // ── Helpers ──────────────────────────────────────────────────
   Widget _sectionLabel(String text) => Text(
-        text,
-        style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: _textSub,
-            letterSpacing: .4),
-      );
+    text,
+    style: const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w700,
+      color: _textSub,
+      letterSpacing: .4,
+    ),
+  );
 
   Widget _inputField({
     required TextEditingController controller,
@@ -364,9 +374,10 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-              color: _primary.withOpacity(.05),
-              blurRadius: 10,
-              offset: const Offset(0, 3)),
+            color: _primary.withOpacity(.05),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: TextFormField(
@@ -374,13 +385,13 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
         keyboardType: keyboardType,
         textCapitalization: capitalization,
         style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
-            color: _primary),
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: _primary,
+        ),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle:
-              const TextStyle(color: _textSub, fontSize: 14),
+          labelStyle: const TextStyle(color: _textSub, fontSize: 14),
           prefixIcon: Icon(icon, color: _textSub, size: 20),
           filled: true,
           fillColor: Colors.transparent,
@@ -391,8 +402,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide:
-                BorderSide(color: _danger.withOpacity(.5)),
+            borderSide: BorderSide(color: _danger.withOpacity(.5)),
           ),
         ),
         validator: validator,
@@ -402,8 +412,19 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
   String _formatDate(DateTime d) {
     const months = [
-      '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${d.day} ${months[d.month]} ${d.year}';
   }
