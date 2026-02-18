@@ -20,11 +20,6 @@ class ExcelService {
       _buildStudentSheet(workbook, students);
       _buildPaymentSheet(workbook, students, payments);
 
-      // Remove default empty sheet
-      if (workbook.worksheets.count > 3) {
-        workbook.worksheets.remove(workbook.worksheets[0]);
-      }
-
       final List<int> bytes = workbook.saveAsStream();
       workbook.dispose();
 
