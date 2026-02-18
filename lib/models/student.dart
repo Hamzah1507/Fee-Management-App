@@ -6,8 +6,9 @@ class Student {
   final String course;
   final int totalFees;
   final int paidFees;
-  final int currentSemester; // NEW
+  final int currentSemester;
   final DateTime createdAt;
+  final DateTime? dueDate; // NEW
 
   Student({
     required this.id,
@@ -17,9 +18,23 @@ class Student {
     required this.paidFees,
     this.currentSemester = 1,
     required this.createdAt,
+    this.dueDate,
   });
 
   int get pendingFees => totalFees - paidFees;
+
+  // Is overdue if due date passed AND still has pending fees
+  bool get isOverdue {
+    if (dueDate == null) return false;
+    if (pendingFees <= 0) return false;
+    return DateTime.now().isAfter(dueDate!);
+  }
+
+  // How many days overdue
+  int get daysOverdue {
+    if (!isOverdue) return 0;
+    return DateTime.now().difference(dueDate!).inDays;
+  }
 
   factory Student.fromMap(String id, Map<String, dynamic> data) {
     return Student(
@@ -30,6 +45,7 @@ class Student {
       paidFees: data['paidFees'] ?? 0,
       currentSemester: data['currentSemester'] ?? 1,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      dueDate: (data['dueDate'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -41,6 +57,7 @@ class Student {
       'paidFees': paidFees,
       'currentSemester': currentSemester,
       'createdAt': createdAt,
+      'dueDate': dueDate,
     };
   }
 }

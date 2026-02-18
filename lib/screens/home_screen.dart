@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../models/student.dart';
 import 'add_student_screen.dart';
+import 'analytics_screen.dart';
 import 'student_details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -190,26 +191,50 @@ class _HomeScreenState extends State<HomeScreen>
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            'Hello, $displayName 👋',
-            style: const TextStyle(
-              fontSize: 13.5,
-              color: _textSub,
-              fontWeight: FontWeight.w500,
-              letterSpacing: .3,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Hello, $displayName 👋',
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  color: _textSub,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: .3,
+                ),
+              ),
+              const SizedBox(height: 2),
+              const Text(
+                'Fees Manager',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: _primary,
+                  letterSpacing: -.5,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 2),
-          const Text(
-            'Fees Manager',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: _primary,
-              letterSpacing: -.5,
+          const Spacer(),
+          // Analytics button
+          GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const AnalyticsScreen()),
+            ),
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: _accent.withOpacity(.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.bar_chart_rounded,
+                  color: _accent, size: 22),
             ),
           ),
         ],
@@ -483,18 +508,21 @@ class _HomeScreenState extends State<HomeScreen>
   // ═══════════════════════════════════════════════════════════
   Color _statusColor(Student s) {
     if (s.pendingFees == 0) return _success;
+    if (s.isOverdue)        return _danger;
     if (s.paidFees == 0)    return _danger;
     return _warning;
   }
 
   String _statusText(Student s) {
     if (s.pendingFees == 0) return 'Paid';
+    if (s.isOverdue)        return 'Overdue';
     if (s.paidFees == 0)    return 'Pending';
     return 'Partial';
   }
 
   IconData _statusIcon(Student s) {
     if (s.pendingFees == 0) return Icons.check_circle_rounded;
+    if (s.isOverdue)        return Icons.warning_rounded;
     if (s.paidFees == 0)    return Icons.cancel_rounded;
     return Icons.timelapse_rounded;
   }
@@ -622,6 +650,62 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
 
                 const SizedBox(height: 14),
+
+                // Overdue banner
+                if (student.isOverdue) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 6),
+                    margin: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      color: _danger.withOpacity(.08),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: _danger.withOpacity(.2)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.alarm_rounded,
+                            size: 13, color: _danger),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${student.daysOverdue} day${student.daysOverdue == 1 ? '' : 's'} overdue — Due: ${_fmtDate(student.dueDate!)}',
+                          style: const TextStyle(
+                              fontSize: 11.5,
+                              color: _danger,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+                ] else if (student.dueDate != null &&
+                    student.pendingFees > 0) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 6),
+                    margin: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      color: _warning.withOpacity(.08),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: _warning.withOpacity(.2)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_today_rounded,
+                            size: 13, color: _warning),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Due: ${_fmtDate(student.dueDate!)}',
+                          style: const TextStyle(
+                              fontSize: 11.5,
+                              color: _warning,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
 
                 // Fee progress
                 Column(
@@ -758,5 +842,13 @@ class _HomeScreenState extends State<HomeScreen>
         ],
       ),
     );
+  }
+
+  String _fmtDate(DateTime d) {
+    const months = [
+      '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return '${d.day} ${months[d.month]} ${d.year}';
   }
 }

@@ -19,6 +19,8 @@ dependencies:
   # PDF & Printing
   pdf: ^3.10.1
   printing: ^5.12.0
+  fl_chart: ^0.68.0
+
 
   # Other
   path_provider: ^2.0.15
