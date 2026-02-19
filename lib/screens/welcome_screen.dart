@@ -15,9 +15,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
 
-  static const _navy   = Color(0xFF003087);
-  static const _accent = Color(0xFF4F6EF7);
+  static const _navy    = Color(0xFF003087);
+  static const _accent  = Color(0xFF4F6EF7);
   static const _textSub = Color(0xFF8A94A6);
+  static const _primary = Color(0xFF1A1F36);
 
   @override
   void initState() {
@@ -29,7 +30,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     _fadeAnim = CurvedAnimation(
         parent: _controller, curve: Curves.easeOut);
     _slideAnim = Tween<Offset>(
-            begin: const Offset(0, .10), end: Offset.zero)
+            begin: const Offset(0, .08), end: Offset.zero)
         .animate(CurvedAnimation(
             parent: _controller, curve: Curves.easeOut));
     _controller.forward();
@@ -43,104 +44,96 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final h = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-
             // ── Top Navy Section ─────────────────────────
-            Expanded(
-              flex: 5,
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: _navy,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(40),
-                    bottomRight: Radius.circular(40),
-                  ),
+            Container(
+              width: double.infinity,
+              height: h * .52,
+              decoration: const BoxDecoration(
+                color: _navy,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(40),
+                  bottomRight: Radius.circular(40),
                 ),
-                child: FadeTransition(
-                  opacity: _fadeAnim,
-                  child: SlideTransition(
-                    position: _slideAnim,
-                    child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      children: [
-
-                        // GLS Logo
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.circular(24),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(.15),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: Image.asset(
-                            'assets/images/gls_logo.png',
-                            height: 60,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        // App Name
-                        const Text(
-                          'Fees Manager',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -.5,
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        // Tagline
-                        const Text(
-                          'GLS University',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 6),
-                          decoration: BoxDecoration(
-                            color:
-                                Colors.white.withOpacity(.12),
-                            borderRadius:
-                                BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            'Fee Management System',
-                            style: TextStyle(
-                              color: Colors.white60,
-                              fontSize: 12,
-                              letterSpacing: .5,
+              ),
+              child: FadeTransition(
+                opacity: _fadeAnim,
+                child: SlideTransition(
+                  position: _slideAnim,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // App Icon
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(.15),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
                             ),
+                          ],
+                        ),
+                        child: Image.asset(
+                          'assets/images/icon.png',
+                          height: 72,
+                          width: 72,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+
+                      const SizedBox(height: 28),
+
+                      const Text(
+                        'Fees Manager',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -.5,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      const Text(
+                        'GLS UNIVERSITY',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 2.5,
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(.12),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          'Fee Management System',
+                          style: TextStyle(
+                            color: Colors.white60,
+                            fontSize: 12,
+                            letterSpacing: .5,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -148,28 +141,25 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
             // ── Bottom Section ───────────────────────────
             Expanded(
-              flex: 3,
               child: FadeTransition(
                 opacity: _fadeAnim,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                      28, 32, 28, 20),
+                  padding: const EdgeInsets.fromLTRB(28, 24, 28, 16),
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         'Welcome! 👋',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF1A1F36),
+                          color: _primary,
                           letterSpacing: -.4,
                         ),
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        'Sign in to manage student fees or\ncreate a new account to get started.',
+                        'Sign in or create an account\nto start managing fees.',
                         style: TextStyle(
                           fontSize: 13.5,
                           color: _textSub,
@@ -182,41 +172,34 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       // Sign In Button
                       SizedBox(
                         width: double.infinity,
-                        height: 54,
+                        height: 52,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _accent,
                             foregroundColor: Colors.white,
                             elevation: 4,
-                            shadowColor:
-                                _accent.withOpacity(.4),
+                            shadowColor: _accent.withOpacity(.4),
                             shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                        16)),
+                                borderRadius: BorderRadius.circular(14)),
                           ),
                           onPressed: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) =>
-                                    const LoginScreen()),
+                                builder: (_) => const LoginScreen()),
                           ),
-                          child: const Text(
-                            'Sign In',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
+                          child: const Text('Sign In',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700)),
                         ),
                       ),
 
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
 
-                      // Register Button
+                      // Create Account Button
                       SizedBox(
                         width: double.infinity,
-                        height: 54,
+                        height: 52,
                         child: OutlinedButton(
                           style: OutlinedButton.styleFrom(
                             foregroundColor: _accent,
@@ -224,35 +207,28 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                 color: _accent.withOpacity(.4),
                                 width: 1.5),
                             shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                        16)),
+                                borderRadius: BorderRadius.circular(14)),
                           ),
                           onPressed: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) =>
-                                    const RegisterScreen()),
+                                builder: (_) => const RegisterScreen()),
                           ),
-                          child: const Text(
-                            'Create Account',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
+                          child: const Text('Create Account',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700)),
                         ),
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
 
-                      // Footer
                       Center(
                         child: Text(
                           'Promoted by Gujarat Law Society Since 1927',
                           style: TextStyle(
-                            fontSize: 11,
-                            color: _textSub.withOpacity(.7),
+                            fontSize: 10.5,
+                            color: _textSub.withOpacity(.6),
                           ),
                         ),
                       ),
