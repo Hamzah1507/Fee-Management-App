@@ -12,11 +12,23 @@ import 'screens/admin_panel_screen.dart';
 import 'screens/currency_screen.dart';
 import 'services/notification_service.dart';
 
+// ── Global Theme Notifier ─────────────────────────────────
+class ThemeNotifier extends ChangeNotifier {
+  bool _isDark = false;
+  bool get isDark => _isDark;
+
+  void toggle(bool val) {
+    _isDark = val;
+    notifyListeners();
+  }
+}
+
+final themeNotifier = ThemeNotifier();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  // ── Initialize Notifications ──────────────────────────
   try {
     await NotificationService().init();
   } catch (e) {
@@ -33,9 +45,8 @@ Route<dynamic> _buildRoute(Widget screen) {
     transitionDuration: const Duration(milliseconds: 250),
     reverseTransitionDuration: const Duration(milliseconds: 200),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final fadeTween = Tween<double>(begin: 0.0, end: 1.0).chain(
-        CurveTween(curve: Curves.easeInOut),
-      );
+      final fadeTween = Tween<double>(begin: 0.0, end: 1.0)
+          .chain(CurveTween(curve: Curves.easeInOut));
       final slideTween = Tween<Offset>(
         begin: const Offset(0.05, 0.0),
         end: Offset.zero,
@@ -52,17 +63,32 @@ Route<dynamic> _buildRoute(Widget screen) {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    themeNotifier.addListener(() => setState(() {}));
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Fees Management',
+      themeMode: themeNotifier.isDark ? ThemeMode.dark : ThemeMode.light,
+
+      // ── Light Theme ───────────────────────────────────────
       theme: ThemeData(
         colorSchemeSeed: Colors.indigo,
         useMaterial3: true,
+        brightness: Brightness.light,
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
             TargetPlatform.android: ZoomPageTransitionsBuilder(),
@@ -71,7 +97,22 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      // ── Named Routes with Smooth Transitions ─────────────
+      // ── Dark Theme ────────────────────────────────────────
+      darkTheme: ThemeData(
+        colorSchemeSeed: Colors.indigo,
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF0F1117),
+        cardColor: const Color(0xFF1A1F2E),
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: ZoomPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          },
+        ),
+      ),
+
+      // ── Named Routes ─────────────────────────────────────
       initialRoute: '/',
       onGenerateRoute: (settings) {
         final routes = {
