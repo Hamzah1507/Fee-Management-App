@@ -221,13 +221,27 @@ class _HomeScreenState extends State<HomeScreen>
             ],
           ),
           const Spacer(),
+          // Admin Panel button
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, '/admin'),
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFA940).withOpacity(.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.admin_panel_settings_rounded,
+                color: Color(0xFFFFA940),
+                size: 22,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
           // Analytics button
           GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => const AnalyticsScreen()),
-            ),
+            onTap: () => Navigator.pushNamed(context, '/analytics'),
             child: Container(
               width: 42,
               height: 42,
@@ -242,11 +256,7 @@ class _HomeScreenState extends State<HomeScreen>
           const SizedBox(width: 10),
           // Profile button
           GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => const ProfileScreen()),
-            ),
+            onTap: () => Navigator.pushNamed(context, '/profile'),
             child: Container(
               width: 42,
               height: 42,

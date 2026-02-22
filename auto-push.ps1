@@ -1,45 +1,46 @@
-# ⏳ Wait for filesystem + git to settle
-Start-Sleep -Seconds 4
+# Prevent multiple parallel runs
+$lockFile = ".autopush.lock"
 
-# Refresh git index
-git update-index -q --refresh
-
-# Get changed files
-$changesRaw = git status --porcelain
-
-if (-not $changesRaw) {
-    Write-Host "Git reports no changes."
+if (Test-Path $lockFile) {
+    Write-Host "Auto-push already running, skipping..."
     exit
 }
 
-# Split into lines
-$lines = $changesRaw -split "`n"
+New-Item $lockFile -ItemType File | Out-Null
 
-# Normalize slashes (Windows fix)
-$lines = $lines | ForEach-Object { $_.Trim() -replace '\\', '/' }
+try {
+    # Wait for filesystem to settle
+    Start-Sleep -Seconds 5
 
-# 🔥 Find first changed Dart file ANYWHERE in repo
-$dartLine = $lines | Where-Object { $_ -match "\.dart$" } | Select-Object -First 1
+    git add -A
 
-if (-not $dartLine) {
-    Write-Host "No Dart file change detected."
-    exit
+    $changesRaw = git diff --name-only --cached
+
+    if (-not $changesRaw) {
+        Write-Host "No staged Dart changes."
+        return
+    }
+
+    $files = $changesRaw -split "`n"
+    $files = $files | ForEach-Object { $_.Trim() -replace '\\', '/' }
+
+    $dartFile = $files | Where-Object { $_ -match "\.dart$" } | Select-Object -First 1
+
+    if (-not $dartFile) {
+        Write-Host "No Dart file change detected."
+        return
+    }
+
+    $baseName = [System.IO.Path]::GetFileNameWithoutExtension($dartFile)
+    $readableName = $baseName -replace '_', ' '
+
+    $commitMessage = "feat: $readableName updated"
+
+    Write-Host "Auto commit message: $commitMessage"
+
+    git commit -m "$commitMessage"
+    git push
 }
-
-# Extract clean path
-$filePath = $dartLine -replace '^[ MADRCU\?]+', ''
-
-# ✅ ALWAYS use just the file name (root-safe)
-$fileNameOnly = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
-
-# Make readable
-$readableName = $fileNameOnly -replace '_', ' '
-
-# Build commit message
-$commitMessage = "feat: $readableName updated"
-
-Write-Host "Auto commit message: $commitMessage"
-
-git add .
-git commit -m "$commitMessage"
-git push
+finally {
+    Remove-Item $lockFile -ErrorAction SilentlyContinue
+}
