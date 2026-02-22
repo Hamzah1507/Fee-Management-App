@@ -414,7 +414,7 @@ class _RegisterScreenState extends State<RegisterScreen>
               const EdgeInsets.symmetric(vertical: 16),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.n
+            borderSide: BorderSide.none
           ),
         ),
       ),
