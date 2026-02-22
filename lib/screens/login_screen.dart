@@ -8,13 +8,17 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _emailController    = TextEditingController();
   final _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
 
   bool _loading = false;
   bool _obscure = true;
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
+  late Animation<Offset> _slideAnim;
 
   static const _navy    = Color(0xFF003087);
   static const _accent  = Color(0xFF4F6EF7);
@@ -25,26 +29,49 @@ class _LoginScreenState extends State<LoginScreen> {
   static const _primary = Color(0xFF1A1F36);
 
   @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _fadeAnim = CurvedAnimation(
+        parent: _animController, curve: Curves.easeOut);
+    _slideAnim = Tween<Offset>(
+            begin: const Offset(0, .06), end: Offset.zero)
+        .animate(CurvedAnimation(
+            parent: _animController, curve: Curves.easeOutCubic));
+    _animController.forward();
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _animController.dispose();
     super.dispose();
   }
 
   Future<void> _login() async {
     final email    = _emailController.text.trim();
     final password = _passwordController.text.trim();
+
     if (email.isEmpty || password.isEmpty) {
       _showSnack('Please fill all fields', isError: true);
       return;
     }
+
     setState(() => _loading = true);
+
     try {
       final user = await _authService.login(email: email, password: password);
-      if (user != null && mounted) Navigator.pushReplacementNamed(context, '/home');
+      if (user != null && mounted) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     } catch (e) {
       if (mounted) _showSnack('Invalid email or password', isError: true);
     }
+
     if (mounted) setState(() => _loading = false);
   }
 
@@ -60,61 +87,139 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final h = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: _bg,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.0, end: 1.0),
-            duration: const Duration(milliseconds: 600),
-            curve: Curves.easeOut,
-            builder: (context, value, child) => Opacity(
-              opacity: value,
-              child: Transform.translate(offset: Offset(0, 16 * (1 - value)), child: child),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(24, 48, 24, 40),
-                  decoration: const BoxDecoration(
-                    color: _navy,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(36),
-                      bottomRight: Radius.circular(36),
-                    ),
+          child: Column(
+            children: [
+              // ── Navy Header ──────────────────────────────
+              Container(
+                width: double.infinity,
+                height: h * .42,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF003087), Color(0xFF1A4AB0)],
                   ),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
-                        child: Image.asset('assets/images/gls_logo.png', height: 52, fit: BoxFit.contain),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text('Fees Manager',
-                          style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -.5)),
-                      const SizedBox(height: 6),
-                      const Text('GLS University — Fee Management System',
-                          style: TextStyle(color: Colors.white60, fontSize: 12.5)),
-                    ],
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(44),
+                    bottomRight: Radius.circular(44),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(24),
+                child: FadeTransition(
+                  opacity: _fadeAnim,
+                  child: SlideTransition(
+                    position: _slideAnim,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // App Icon
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(.18),
+                                blurRadius: 24,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: Image.asset('assets/images/icon.png',
+                              height: 60, width: 60, fit: BoxFit.contain),
+                        ),
+                        const SizedBox(height: 20),
+                        const Text('Fees Manager',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 30,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -.8)),
+                        const SizedBox(height: 6),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(width: 28, height: 1, color: Colors.white30),
+                            const SizedBox(width: 8),
+                            const Text('GLS UNIVERSITY',
+                                style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 3)),
+                            const SizedBox(width: 8),
+                            Container(width: 28, height: 1, color: Colors.white30),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(.13),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(.2), width: 1),
+                          ),
+                          child: const Text('Fee Management System',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // ── Form ─────────────────────────────────────
+              FadeTransition(
+                opacity: _fadeAnim,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 8),
-                      const Text('Welcome back!',
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: _primary, letterSpacing: -.4)),
+                      RichText(
+                        text: const TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Welcome back! ',
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w900,
+                                  color: _primary,
+                                  letterSpacing: -.5),
+                            ),
+                            TextSpan(
+                              text: '👋',
+                              style: TextStyle(fontSize: 22),
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 4),
                       const Text('Sign in to continue managing fees',
-                          style: TextStyle(fontSize: 13.5, color: _textSub)),
-                      const SizedBox(height: 28),
-                      _inputField(controller: _emailController, label: 'Email Address',
-                          icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress),
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: _textSub,
+                              height: 1.5)),
+                      const SizedBox(height: 24),
+
+                      _inputField(
+                        controller: _emailController,
+                        label: 'Email Address',
+                        icon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
                       const SizedBox(height: 14),
                       _inputField(
                         controller: _passwordController,
@@ -122,12 +227,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         icon: Icons.lock_outline_rounded,
                         obscure: _obscure,
                         suffixIcon: IconButton(
-                          icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                              color: _textSub, size: 20),
-                          onPressed: () => setState(() => _obscure = !_obscure),
+                          icon: Icon(
+                            _obscure
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            color: _textSub,
+                            size: 20,
+                          ),
+                          onPressed: () =>
+                              setState(() => _obscure = !_obscure),
                         ),
                       ),
                       const SizedBox(height: 28),
+
+                      // Sign In Button
                       SizedBox(
                         width: double.infinity,
                         height: 54,
@@ -135,39 +248,65 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _accent,
                             foregroundColor: Colors.white,
-                            elevation: 4,
-                            shadowColor: const Color(0x664F6EF7),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            elevation: 6,
+                            shadowColor: _accent.withOpacity(.35),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
                           ),
                           onPressed: _loading ? null : _login,
                           child: _loading
-                              ? const SizedBox(width: 22, height: 22,
-                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
-                              : const Text('Sign In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white, strokeWidth: 2.5),
+                                )
+                              : const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.login_rounded, size: 18),
+                                    SizedBox(width: 8),
+                                    Text('Sign In',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: .3)),
+                                  ],
+                                ),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text("Don't have an account? ", style: TextStyle(color: _textSub, fontSize: 13.5)),
+                          const Text("Don't have an account? ",
+                              style: TextStyle(color: _textSub, fontSize: 13.5)),
                           GestureDetector(
-                            onTap: () => Navigator.pushNamed(context, '/register'),
+                            onTap: () =>
+                                Navigator.pushNamed(context, '/register'),
                             child: const Text('Create Account',
-                                style: TextStyle(color: _accent, fontWeight: FontWeight.w700, fontSize: 13.5)),
+                                style: TextStyle(
+                                    color: _accent,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13.5)),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
                       Center(
-                        child: Text('Promoted by Gujarat Law Society Since 1927',
-                            style: TextStyle(fontSize: 11, color: _textSub.withOpacity(.7))),
+                        child: Text(
+                          '© Promoted by Gujarat Law Society Since 1927',
+                          style: TextStyle(
+                              fontSize: 10.5,
+                              color: _textSub.withOpacity(.55)),
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -186,13 +325,19 @@ class _LoginScreenState extends State<LoginScreen> {
       decoration: BoxDecoration(
         color: _surface,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: const [BoxShadow(color: Color(0x0D1A1F36), blurRadius: 10, offset: Offset(0, 3))],
+        boxShadow: [
+          BoxShadow(
+              color: _primary.withOpacity(.05),
+              blurRadius: 10,
+              offset: const Offset(0, 3)),
+        ],
       ),
       child: TextField(
         controller: controller,
         obscureText: obscure,
         keyboardType: keyboardType,
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: _primary),
+        style: const TextStyle(
+            fontSize: 15, fontWeight: FontWeight.w500, color: _primary),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: _textSub, fontSize: 14),
@@ -201,7 +346,10 @@ class _LoginScreenState extends State<LoginScreen> {
           filled: true,
           fillColor: Colors.transparent,
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide.none,
+          ),
         ),
       ),
     );
