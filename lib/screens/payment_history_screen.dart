@@ -379,5 +379,5 @@ class _MethodInfo {
   final IconData icon;
   final Color color;
   final String label;
-  const _MethodInfo(this.icon, this.color, this.label);
+  const _MethodInfo(this.icon, this.color, this.label)
 }
