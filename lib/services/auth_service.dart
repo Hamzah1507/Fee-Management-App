@@ -31,7 +31,7 @@ class AuthService {
         'uid': user.uid,
         'name': name,
         'email': email,
-        'role': 'admin',
+        'role': 'Admin',
         'createdAt': FieldValue.serverTimestamp(),
       });
 
