@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/student.dart';
 import 'add_student_screen.dart';
 import 'student_details_screen.dart';
@@ -80,42 +81,87 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
+  Future<bool> _onWillPop() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Leave App',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+        ),
+        content: const Text(
+          'Do you want to leave the application?',
+          style: TextStyle(color: _textSub, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel', style: TextStyle(color: _textSub)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _primary,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Leave'),
+          ),
+        ],
+      ),
+    );
+    return confirm ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _bg,
-      resizeToAvoidBottomInset: true,
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SafeArea(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: _studentsStream,
-            builder: (context, snapshot) {
-              final docs = snapshot.data?.docs ?? [];
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  _searchBar(),
-                  if (snapshot.hasData) _dashboard(docs),
-                  _sectionLabel('Students'),
-                  Expanded(child: _studentList(snapshot, docs)),
-                ],
-              );
-            },
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        final shouldPop = await _onWillPop();
+        if (shouldPop && mounted) {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: _bg,
+        resizeToAvoidBottomInset: true,
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SafeArea(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _studentsStream,
+              builder: (context, snapshot) {
+                final docs = snapshot.data?.docs ?? [];
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(),
+                    _searchBar(),
+                    if (snapshot.hasData) _dashboard(docs),
+                    _sectionLabel('Students'),
+                    Expanded(child: _studentList(snapshot, docs)),
+                  ],
+                );
+              },
+            ),
           ),
         ),
-      ),
-      floatingActionButton: ScaleTransition(
-        scale: CurvedAnimation(parent: _fabAnimController, curve: Curves.elasticOut),
-        child: FloatingActionButton.extended(
-          elevation: 4,
-          backgroundColor: _accent,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          onPressed: () => Navigator.pushNamed(context, '/add-student'),
-          icon: const Icon(Icons.person_add_alt_1_rounded, size: 20),
-          label: const Text('Add Student', style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: .3)),
+        floatingActionButton: ScaleTransition(
+          scale: CurvedAnimation(parent: _fabAnimController, curve: Curves.elasticOut),
+          child: FloatingActionButton.extended(
+            elevation: 4,
+            backgroundColor: _accent,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            onPressed: () => Navigator.pushNamed(context, '/add-student'),
+            icon: const Icon(Icons.person_add_alt_1_rounded, size: 20),
+            label: const Text('Add Student', style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: .3)),
+          ),
         ),
       ),
     );
@@ -489,7 +535,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // ✅ Clean minimal professional delete dialog
   Future<void> _confirmDelete(BuildContext context, Student student) async {
     final confirm = await showDialog<bool>(
       context: context,

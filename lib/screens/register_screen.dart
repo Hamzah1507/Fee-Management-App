@@ -57,6 +57,11 @@ class _RegisterScreenState extends State<RegisterScreen>
     super.dispose();
   }
 
+  bool _isValidEmail(String email) {
+    return email.trim().toLowerCase().endsWith('@gmail.com') &&
+        email.trim().length > '@gmail.com'.length;
+  } 
+
   Future<void> _register() async {
     if (_loading) return;
 
@@ -68,6 +73,10 @@ class _RegisterScreenState extends State<RegisterScreen>
     if (name.isEmpty || email.isEmpty ||
         password.isEmpty || confirm.isEmpty) {
       _showSnack('Please fill all fields', isError: true);
+      return;
+    }
+    if (!_isValidEmail(email)) {
+      _showSnack('Please enter a valid email address', isError: true);
       return;
     }
     if (password != confirm) {

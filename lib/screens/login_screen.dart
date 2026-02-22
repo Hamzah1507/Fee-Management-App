@@ -51,6 +51,11 @@ class _LoginScreenState extends State<LoginScreen>
     _animController.dispose();
     super.dispose();
   }
+  
+  bool _isValidEmail(String email) {
+    return email.trim().toLowerCase().endsWith('@gmail.com') &&
+        email.trim().length > '@gmail.com'.length;
+  } 
 
   Future<void> _login() async {
     final email    = _emailController.text.trim();
@@ -58,6 +63,10 @@ class _LoginScreenState extends State<LoginScreen>
 
     if (email.isEmpty || password.isEmpty) {
       _showSnack('Please fill all fields', isError: true);
+      return;
+    }
+    if (!_isValidEmail(email)) {
+      _showSnack('Please enter a valid email address', isError: true);
       return;
     }
 
