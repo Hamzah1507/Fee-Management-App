@@ -326,8 +326,8 @@ class ExcelService {
           cell.cellStyle.bold = true;
         }
       }
-    
-  }
+    }
+      }
 
   // ── Helpers ──────────────────────────────────────────────────
   static String _fmtDate(DateTime d) {
