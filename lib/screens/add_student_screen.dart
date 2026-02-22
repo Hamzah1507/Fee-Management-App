@@ -85,12 +85,11 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       });
 
       if (mounted) {
-        // 🔔 Show notification
+        // 🔔 Show notification first
         await NotificationService().showStudentAdded(
           studentName: _nameController.text.trim(),
           course: _courseController.text.trim(),
         );
-        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Student added successfully'),
@@ -101,6 +100,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
             margin: const EdgeInsets.all(16),
           ),
         );
+        Navigator.pop(context);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -411,6 +411,6 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
-    return '${d.day} ${months[d.month]} ${d.year}'
+    return '${d.day} ${months[d.month]} ${d.year}';
   }
 }
