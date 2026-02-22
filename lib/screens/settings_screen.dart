@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../main.dart' show themeNotifier;
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,7 +13,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final AuthService _authService = AuthService();
 
   // Settings state
-  bool _darkMode        = false;
+  bool _darkMode        = themeNotifier.isDark;
   bool _notifications   = true;
   bool _emailAlerts     = false;
   bool _overdueAlerts   = true;
