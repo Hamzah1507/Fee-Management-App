@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/student.dart';
 import '../models/payment.dart';
+import '../services/notification_service.dart';
 
 class CollectFeeScreen extends StatefulWidget {
   final Student student;
@@ -81,6 +82,12 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
       await paymentRef.set(payment.toMap());
 
       if (mounted) {
+        // 🔔 Show notification
+        await NotificationService().showFeeCollected(
+          studentName: widget.student.name,
+          amount: amount,
+          semester: _semester,
+        );
         Navigator.pop(context);
         _showSnack('Payment of ₹$amount collected successfully!');
       }
