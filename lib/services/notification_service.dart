@@ -33,7 +33,7 @@ class NotificationService {
     required int amount,
     required int semester,
   }) async {
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: AndroidNotificationDetails(
         'fee_collected',
         'Fee Collected',
@@ -62,7 +62,7 @@ class NotificationService {
     required int pendingAmount,
     required int daysOverdue,
   }) async {
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: AndroidNotificationDetails(
         'overdue_alert',
         'Overdue Alerts',
@@ -90,17 +90,18 @@ class NotificationService {
     required String studentName,
     required String course,
   }) async {
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: AndroidNotificationDetails(
         'student_added',
         'Student Added',
         channelDescription:
             'Notifications when a student is added',
-        importance: Importance.defaultImportance,
-        priority: Priority.defaultPriority,
+        importance: Importance.high,
+        priority: Priority.high,
         icon: '@mipmap/ic_launcher',
         color: Color(0xFF4F6EF7),
         playSound: true,
+        enableVibration: true,
       ),
     );
 
