@@ -327,7 +327,7 @@ class ExcelService {
         }
       }
     }
-      }
+  }
 
   // ── Helpers ──────────────────────────────────────────────────
   static String _fmtDate(DateTime d) {
