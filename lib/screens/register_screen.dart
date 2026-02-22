@@ -192,7 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 8),
-                      const Text('Join GLS Fees Manager',
+                      const Text('Create Your Account',
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
@@ -202,7 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                       const Text('Fill in your details to get started',
                           style: TextStyle(
                               fontSize: 13.5, color: _textSub)),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
 
                       _inputField(
                         controller: _nameController,
@@ -210,14 +210,14 @@ class _RegisterScreenState extends State<RegisterScreen>
                         icon: Icons.person_outline_rounded,
                         capitalization: TextCapitalization.words,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       _inputField(
                         controller: _emailController,
                         label: 'Email Address',
                         icon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       _inputField(
                         controller: _passwordController,
                         label: 'Password',
@@ -235,7 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                               setState(() => _obscure = !_obscure),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       _inputField(
                         controller: _confirmController,
                         label: 'Confirm Password',
@@ -253,7 +253,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                               () => _obscureConf = !_obscureConf),
                         ),
                       ),
-                      const SizedBox(height: 28),
+                      const SizedBox(height: 20),
 
                       // Create Account Button
                       SizedBox(
@@ -303,13 +303,14 @@ class _RegisterScreenState extends State<RegisterScreen>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 14),
                       Center(
                         child: Text(
-                          'Promoted by Gujarat Law Society Since 1927',
+                          '© Promoted by Gujarat Law Society Since 1927',
                           style: TextStyle(
-                              fontSize: 11,
-                              color: _textSub.withOpacity(.7)),
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w600,
+                              color: _textSub.withOpacity(.8)),
                         ),
                       ),
                     ],
