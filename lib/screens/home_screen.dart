@@ -28,31 +28,21 @@ class _HomeScreenState extends State<HomeScreen>
   static const _bg      = Color(0xFFF4F6FC);
   static const _textSub = Color(0xFF8A94A6);
 
-  // ✅ Single stream cached — no duplicate Firestore calls
   late final Stream<QuerySnapshot> _studentsStream;
 
-  // ✅ Cached box decorations — not rebuilt every frame
   static final _cardDecoration = BoxDecoration(
     color: _surface,
     borderRadius: BorderRadius.circular(18),
-    boxShadow: [
-      BoxShadow(
-        color: Color(0x121A1F36),
-        blurRadius: 16,
-        offset: Offset(0, 4),
-      ),
+    boxShadow: const [
+      BoxShadow(color: Color(0x121A1F36), blurRadius: 16, offset: Offset(0, 4)),
     ],
   );
 
   static final _searchDecoration = BoxDecoration(
     color: _surface,
     borderRadius: BorderRadius.circular(14),
-    boxShadow: [
-      BoxShadow(
-        color: Color(0x0F1A1F36),
-        blurRadius: 16,
-        offset: Offset(0, 4),
-      ),
+    boxShadow: const [
+      BoxShadow(color: Color(0x0F1A1F36), blurRadius: 16, offset: Offset(0, 4)),
     ],
   );
 
@@ -75,10 +65,7 @@ class _HomeScreenState extends State<HomeScreen>
   Future<void> _fetchUserName() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get();
+    final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (doc.exists && mounted) {
       setState(() {
         _userName = (doc.data()?['name'] ?? '').toString().trim();
@@ -102,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen>
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
           child: StreamBuilder<QuerySnapshot>(
-            stream: _studentsStream, // ✅ single stream
+            stream: _studentsStream,
             builder: (context, snapshot) {
               final docs = snapshot.data?.docs ?? [];
               return Column(
@@ -120,10 +107,7 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
       floatingActionButton: ScaleTransition(
-        scale: CurvedAnimation(
-          parent: _fabAnimController,
-          curve: Curves.elasticOut,
-        ),
+        scale: CurvedAnimation(parent: _fabAnimController, curve: Curves.elasticOut),
         child: FloatingActionButton.extended(
           elevation: 4,
           backgroundColor: _accent,
@@ -131,10 +115,7 @@ class _HomeScreenState extends State<HomeScreen>
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           onPressed: () => Navigator.pushNamed(context, '/add-student'),
           icon: const Icon(Icons.person_add_alt_1_rounded, size: 20),
-          label: const Text(
-            'Add Student',
-            style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: .3),
-          ),
+          label: const Text('Add Student', style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: .3)),
         ),
       ),
     );
@@ -171,14 +152,11 @@ class _HomeScreenState extends State<HomeScreen>
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 100),
       itemCount: filtered.length,
-      // ✅ Cache extent improves scroll performance
       cacheExtent: 300,
       itemBuilder: (context, index) {
         final doc = filtered[index];
         final student = Student.fromMap(doc.id, doc.data() as Map<String, dynamic>);
-        return RepaintBoundary( // ✅ isolates each card repaint
-          child: _studentCard(context, student),
-        );
+        return RepaintBoundary(child: _studentCard(context, student));
       },
     );
   }
@@ -193,10 +171,8 @@ class _HomeScreenState extends State<HomeScreen>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Hello, $displayName 👋',
-                style: const TextStyle(fontSize: 13.5, color: _textSub, fontWeight: FontWeight.w500, letterSpacing: .3),
-              ),
+              Text('Hello, $displayName 👋',
+                  style: const TextStyle(fontSize: 13.5, color: _textSub, fontWeight: FontWeight.w500, letterSpacing: .3)),
               const SizedBox(height: 2),
               const Text('Fees Manager',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: _primary, letterSpacing: -.5)),
@@ -217,12 +193,8 @@ class _HomeScreenState extends State<HomeScreen>
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, route),
       child: Container(
-        width: 42,
-        height: 42,
-        decoration: BoxDecoration(
-          color: color.withOpacity(.12),
-          borderRadius: BorderRadius.circular(12),
-        ),
+        width: 42, height: 42,
+        decoration: BoxDecoration(color: color.withOpacity(.12), borderRadius: BorderRadius.circular(12)),
         child: Icon(icon, color: color, size: 22),
       ),
     );
@@ -232,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen>
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Container(
-        decoration: _searchDecoration, // ✅ cached
+        decoration: _searchDecoration,
         child: TextField(
           controller: _searchController,
           autofocus: false,
@@ -254,10 +226,7 @@ class _HomeScreenState extends State<HomeScreen>
             filled: true,
             fillColor: Colors.transparent,
             contentPadding: const EdgeInsets.symmetric(vertical: 14),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide.none,
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
           ),
         ),
       ),
@@ -287,9 +256,7 @@ class _HomeScreenState extends State<HomeScreen>
                 colors: [Color(0xFF3A56E8), Color(0xFF6A3DE8)],
               ),
               borderRadius: BorderRadius.circular(22),
-              boxShadow: const [
-                BoxShadow(color: Color(0x594F6EF7), blurRadius: 24, offset: Offset(0, 10)),
-              ],
+              boxShadow: const [BoxShadow(color: Color(0x594F6EF7), blurRadius: 24, offset: Offset(0, 10))],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,8 +281,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: LinearProgressIndicator(
-                    value: progress,
-                    minHeight: 7,
+                    value: progress, minHeight: 7,
                     backgroundColor: Colors.white24,
                     valueColor: const AlwaysStoppedAnimation(Colors.white),
                   ),
@@ -412,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: _cardDecoration, // ✅ cached static decoration
+      decoration: _cardDecoration,
       child: Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(18),
@@ -430,12 +396,8 @@ class _HomeScreenState extends State<HomeScreen>
                 Row(
                   children: [
                     Container(
-                      width: 46,
-                      height: 46,
-                      decoration: BoxDecoration(
-                        color: const Color(0x1A4F6EF7),
-                        borderRadius: BorderRadius.circular(13),
-                      ),
+                      width: 46, height: 46,
+                      decoration: BoxDecoration(color: const Color(0x1A4F6EF7), borderRadius: BorderRadius.circular(13)),
                       child: Center(
                         child: Text(initials,
                             style: const TextStyle(fontWeight: FontWeight.w800, color: _accent, fontSize: 15)),
@@ -456,10 +418,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(.10),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                      decoration: BoxDecoration(color: color.withOpacity(.10), borderRadius: BorderRadius.circular(20)),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -496,8 +455,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ClipRRect(
                       borderRadius: BorderRadius.circular(6),
                       child: LinearProgressIndicator(
-                        value: pct,
-                        minHeight: 5,
+                        value: pct, minHeight: 5,
                         backgroundColor: const Color(0xFFF0F2F8),
                         valueColor: AlwaysStoppedAnimation(color),
                       ),
@@ -525,38 +483,61 @@ class _HomeScreenState extends State<HomeScreen>
         children: [
           Icon(icon, size: 13, color: color),
           const SizedBox(width: 6),
-          Text(text, style: TextStyle(fontSize: 11.5, color: color, fontWeight: FontWeight.w600)),
+          Expanded(child: Text(text, style: TextStyle(fontSize: 11.5, color: color, fontWeight: FontWeight.w600))),
         ],
       ),
     );
   }
 
+  // ✅ Clean minimal professional delete dialog
   Future<void> _confirmDelete(BuildContext context, Student student) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: _surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Delete Student', style: TextStyle(fontWeight: FontWeight.w700)),
-        content: Text('Are you sure you want to delete "${student.name}"? This action cannot be undone.',
-            style: const TextStyle(color: _textSub, height: 1.4)),
+        title: const Text('Delete Student',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: _primary)),
+        content: Text(
+          'Are you sure you want to delete "${student.name}"?\nThis action cannot be undone.',
+          style: const TextStyle(color: _textSub, height: 1.6, fontSize: 13.5),
+        ),
+        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel', style: TextStyle(color: _textSub)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _danger,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              elevation: 0,
-            ),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete'),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: _primary,
+                    side: const BorderSide(color: Color(0xFFE2E8F0)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                  ),
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _primary,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                  ),
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.w700)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
+
     if (confirm == true) {
       await FirebaseFirestore.instance.collection('students').doc(student.id).delete();
       if (mounted) {
@@ -577,8 +558,7 @@ class _HomeScreenState extends State<HomeScreen>
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: 80, height: 80,
             decoration: BoxDecoration(color: const Color(0x144F6EF7), borderRadius: BorderRadius.circular(24)),
             child: const Icon(Icons.school_rounded, size: 40, color: _accent),
           ),

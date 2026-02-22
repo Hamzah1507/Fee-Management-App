@@ -31,10 +31,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Sign Out',
-            style: TextStyle(fontWeight: FontWeight.w700)),
-        content: const Text('Are you sure you want to sign out?',
-            style: TextStyle(color: _textSub, height: 1.4)),
+        title: const Text(
+          'Sign Out',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+        ),
+        content: const Text(
+          'Are you sure you want to sign out?',
+          style: TextStyle(color: _textSub, height: 1.4),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -42,7 +46,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: _danger,
+              backgroundColor: _primary,
               foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(

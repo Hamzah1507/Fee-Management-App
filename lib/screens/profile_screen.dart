@@ -26,22 +26,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
-        title: const Text('Sign Out',
-            style: TextStyle(fontWeight: FontWeight.w700)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Sign Out',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+        ),
         content: const Text(
-            'Are you sure you want to sign out?',
-            style: TextStyle(color: _textSub, height: 1.4)),
+          'Are you sure you want to sign out?',
+          style: TextStyle(color: _textSub, height: 1.4),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel',
-                style: TextStyle(color: _textSub)),
+            child: const Text('Cancel', style: TextStyle(color: _textSub)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: _danger,
+              backgroundColor: _primary,
               foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
@@ -56,18 +57,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (confirm == true) {
       await _authService.logout();
-      if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-            context, '/', (route) => false);
-      }
+      if (mounted) Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    final email =
-        FirebaseAuth.instance.currentUser?.email ?? '';
+    final uid   = FirebaseAuth.instance.currentUser?.uid;
+    final email = FirebaseAuth.instance.currentUser?.email ?? '';
 
     return Scaffold(
       backgroundColor: _bg,
@@ -77,8 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         foregroundColor: _primary,
         centerTitle: true,
         title: const Text('Profile',
-            style: TextStyle(
-                fontWeight: FontWeight.w700, fontSize: 17)),
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17)),
         actions: [
           IconButton(
             icon: Container(
@@ -87,282 +83,172 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: _accent.withOpacity(.10),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.settings_rounded,
-                  color: _accent, size: 20),
+              child: const Icon(Icons.settings_rounded, color: _accent, size: 20),
             ),
-            onPressed: () =>
-                Navigator.pushNamed(context, '/settings'),
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
           ),
           const SizedBox(width: 6),
         ],
       ),
       body: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .get(),
+        future: FirebaseFirestore.instance.collection('users').doc(uid).get(),
         builder: (context, snapshot) {
-          final name = snapshot.hasData && snapshot.data!.exists
-              ? (snapshot.data!.data()
-                      as Map<String, dynamic>)['name'] ??
-                  'User'
-              : 'User';
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator(color: _accent));
+          }
 
-          final role = snapshot.hasData && snapshot.data!.exists
-              ? (snapshot.data!.data()
-                      as Map<String, dynamic>)['role'] ??
-                  'admin'
-              : 'admin';
+          final data = snapshot.data!.exists
+              ? snapshot.data!.data() as Map<String, dynamic>
+              : <String, dynamic>{};
 
-          final initials = name
-              .toString()
-              .trim()
-              .split(' ')
-              .take(2)
-              .map((e) => e.isNotEmpty ? e[0].toUpperCase() : '')
-              .join();
+          final name = (data['name'] ?? '').toString().trim();
+          final role = (data['role'] ?? 'admin').toString();
+          final initials = name.isNotEmpty
+              ? name.split(' ').take(2).map((e) => e.isNotEmpty ? e[0].toUpperCase() : '').join()
+              : email.isNotEmpty ? email[0].toUpperCase() : '?';
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-
-                // ── Profile Hero Card ────────────────────
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [_navy, Color(0xFF1A4A9F)],
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: _navy.withOpacity(.30),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
+          return Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                   child: Column(
                     children: [
-                      // Avatar
+                      // ── Profile Hero Card ──
                       Container(
-                        width: 72,
-                        height: 72,
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(.15),
-                          borderRadius:
-                              BorderRadius.circular(20),
-                        ),
-                        child: Center(
-                          child: Text(
-                            initials,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontWeight: FontWeight.w800,
-                            ),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [_navy, Color(0xFF1A4A9F)],
                           ),
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(color: _navy.withOpacity(.30), blurRadius: 20, offset: const Offset(0, 8)),
+                          ],
                         ),
-                      ),
-
-                      const SizedBox(height: 14),
-
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-
-                      const SizedBox(height: 4),
-
-                      Text(
-                        email,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 13,
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // Role Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 6),
-                        decoration: BoxDecoration(
-                          color:
-                              Colors.white.withOpacity(.15),
-                          borderRadius:
-                              BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        child: Column(
                           children: [
-                            const Icon(
-                                Icons.verified_rounded,
-                                size: 14,
-                                color: Colors.white70),
-                            const SizedBox(width: 6),
-                            Text(
-                              role.toUpperCase(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1,
+                            Container(
+                              width: 72, height: 72,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(.15),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Center(
+                                child: Text(initials,
+                                    style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w800)),
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+                            Text(name, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
+                            const SizedBox(height: 4),
+                            Text(email, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(.15),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.verified_rounded, size: 14, color: Colors.white70),
+                                  const SizedBox(width: 6),
+                                  Text(role.toUpperCase(),
+                                      style: const TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w700, letterSpacing: 1)),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
+                      const SizedBox(height: 24),
+                      _sectionLabel('App Information'),
+                      const SizedBox(height: 12),
+                      _infoCard([
+                        _infoRow(Icons.school_rounded, 'Institution', 'GLS University'),
+                        _infoRow(Icons.location_on_rounded, 'Location', 'Navrangpura, Ahmedabad'),
+                        _infoRow(Icons.verified_user_rounded, 'System', 'Fee Management System'),
+                        _infoRow(Icons.new_releases_rounded, 'Version', '1.0.0'),
+                      ]),
+                      const SizedBox(height: 20),
+                      _sectionLabel('Account'),
+                      const SizedBox(height: 12),
+                      _infoCard([
+                        _infoRow(Icons.email_outlined, 'Email', email),
+                        _infoRow(Icons.badge_outlined, 'User ID', uid?.substring(0, 12).toUpperCase() ?? '—'),
+                      ]),
+                      const SizedBox(height: 20),
+                      _sectionLabel('Quick Stats'),
+                      const SizedBox(height: 12),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance.collection('students').snapshots(),
+                        builder: (context, snap) {
+                          final total = snap.data?.docs.length ?? 0;
+                          final paid = snap.data?.docs.where((d) {
+                            final data = d.data() as Map<String, dynamic>;
+                            return (data['paidFees'] ?? 0) >= (data['totalFees'] ?? 1);
+                          }).length ?? 0;
+                          return Row(children: [
+                            Expanded(child: _quickStat('$total', 'Total Students', Icons.people_rounded, const Color(0xFFEEF2FF), _accent)),
+                            const SizedBox(width: 12),
+                            Expanded(child: _quickStat('$paid', 'Fully Paid', Icons.check_circle_rounded, const Color(0xFFF0FFF8), _success)),
+                          ]);
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      Text('Promoted by Gujarat Law Society Since 1927',
+                          style: TextStyle(fontSize: 11, color: _textSub.withOpacity(.6))),
                     ],
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 24),
-
-                // ── App Info ─────────────────────────────
-                _sectionLabel('App Information'),
-                const SizedBox(height: 12),
-                _infoCard([
-                  _infoRow(Icons.school_rounded,
-                      'Institution', 'GLS University'),
-                  _infoRow(Icons.location_on_rounded,
-                      'Location',
-                      'Navrangpura, Ahmedabad'),
-                  _infoRow(Icons.verified_user_rounded,
-                      'System', 'Fee Management System'),
-                  _infoRow(Icons.new_releases_rounded,
-                      'Version', '1.0.0'),
-                ]),
-
-                const SizedBox(height: 20),
-
-                // ── Account ──────────────────────────────
-                _sectionLabel('Account'),
-                const SizedBox(height: 12),
-                _infoCard([
-                  _infoRow(Icons.email_outlined,
-                      'Email', email),
-                  _infoRow(Icons.badge_outlined,
-                      'User ID',
-                      uid?.substring(0, 12).toUpperCase() ??
-                          '—'),
-                ]),
-
-                const SizedBox(height: 20),
-
-                // ── Quick Stats ──────────────────────────
-                _sectionLabel('Quick Stats'),
-                const SizedBox(height: 12),
-                StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('students')
-                      .snapshots(),
-                  builder: (context, snap) {
-                    final total =
-                        snap.data?.docs.length ?? 0;
-                    final paid = snap.data?.docs
-                            .where((d) {
-                              final data = d.data()
-                                  as Map<String, dynamic>;
-                              return (data['paidFees'] ??
-                                      0) >=
-                                  (data['totalFees'] ?? 1);
-                            })
-                            .length ??
-                        0;
-                    return Row(children: [
-                      Expanded(
-                          child: _quickStat(
-                              '$total',
-                              'Total Students',
-                              Icons.people_rounded,
-                              const Color(0xFFEEF2FF),
-                              _accent)),
-                      const SizedBox(width: 12),
-                      Expanded(
-                          child: _quickStat(
-                              '$paid',
-                              'Fully Paid',
-                              Icons.check_circle_rounded,
-                              const Color(0xFFF0FFF8),
-                              _success)),
-                    ]);
-                  },
+              // ── Fixed Sign Out at bottom ──
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+                decoration: BoxDecoration(
+                  color: _surface,
+                  boxShadow: [
+                    BoxShadow(color: _primary.withOpacity(.06), blurRadius: 16, offset: const Offset(0, -4)),
+                  ],
                 ),
-
-                const SizedBox(height: 28),
-
-                // ── Sign Out Button ──────────────────────
-                SizedBox(
+                child: SizedBox(
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          _danger.withOpacity(.08),
-                      foregroundColor: _danger,
+                      backgroundColor: _danger,
+                      foregroundColor: Colors.white,
                       elevation: 0,
-                      side: BorderSide(
-                          color: _danger.withOpacity(.3),
-                          width: 1.5),
-                      shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
                     onPressed: _logout,
-                    icon: const Icon(Icons.logout_rounded,
-                        size: 20),
-                    label: const Text('Sign Out',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15)),
+                    icon: const Icon(Icons.logout_rounded, size: 20),
+                    label: const Text('Sign Out', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
                   ),
                 ),
-
-                const SizedBox(height: 16),
-
-                Text(
-                  'Promoted by Gujarat Law Society Since 1927',
-                  style: TextStyle(
-                      fontSize: 11,
-                      color: _textSub.withOpacity(.6)),
-                ),
-              ],
-            ),
+              ),
+            ],
           );
         },
       ),
     );
   }
 
-  // ── Helpers ──────────────────────────────────────────────
   Widget _sectionLabel(String text) => Text(text,
-      style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-          color: _textSub,
-          letterSpacing: .4));
+      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _textSub, letterSpacing: .4));
 
   Widget _infoCard(List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
         color: _surface,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-              color: _primary.withOpacity(.05),
-              blurRadius: 10,
-              offset: const Offset(0, 3)),
-        ],
+        boxShadow: [BoxShadow(color: _primary.withOpacity(.05), blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: Column(children: children),
     );
@@ -370,15 +256,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _infoRow(IconData icon, String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: 16, vertical: 13),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
       child: Row(children: [
         Container(
           padding: const EdgeInsets.all(7),
-          decoration: BoxDecoration(
-            color: _accent.withOpacity(.08),
-            borderRadius: BorderRadius.circular(8),
-          ),
+          decoration: BoxDecoration(color: _accent.withOpacity(.08), borderRadius: BorderRadius.circular(8)),
           child: Icon(icon, size: 16, color: _accent),
         ),
         const SizedBox(width: 14),
@@ -386,15 +268,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: const TextStyle(
-                      fontSize: 11, color: _textSub)),
+              Text(label, style: const TextStyle(fontSize: 11, color: _textSub)),
               const SizedBox(height: 1),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w600,
-                      color: _primary)),
+              Text(value, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: _primary)),
             ],
           ),
         ),
@@ -402,39 +278,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _quickStat(String value, String label,
-      IconData icon, Color bg, Color color) {
+  Widget _quickStat(String value, String label, IconData icon, Color bg, Color color) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: _surface,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-              color: _primary.withOpacity(.05),
-              blurRadius: 10,
-              offset: const Offset(0, 3)),
-        ],
+        boxShadow: [BoxShadow(color: _primary.withOpacity(.05), blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: Row(children: [
         Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-              color: bg,
-              borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(10)),
           child: Icon(icon, size: 18, color: color),
         ),
         const SizedBox(width: 10),
-        Column(crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: _primary)),
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 10.5, color: _textSub)),
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _primary)),
+          Text(label, style: const TextStyle(fontSize: 10.5, color: _textSub)),
         ]),
       ]),
     );
