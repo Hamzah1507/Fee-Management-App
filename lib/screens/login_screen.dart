@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen>
                       children: [
                         // App Icon
                         Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(24),
@@ -133,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen>
                             ],
                           ),
                           child: Image.asset('assets/images/gls_logo.png',
-                              height: 60, width: 60, fit: BoxFit.contain),
+                              height: 52, fit: BoxFit.contain),
                         ),
                         const SizedBox(height: 20),
                         const Text('Fees Manager',
