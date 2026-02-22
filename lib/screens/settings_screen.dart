@@ -12,45 +12,34 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final AuthService _authService = AuthService();
 
-  // Settings state
-  bool _darkMode        = themeNotifier.isDark;
-  bool _notifications   = true;
-  bool _emailAlerts     = false;
-  bool _overdueAlerts   = true;
-  String _currency      = '₹ INR';
-  String _dateFormat    = 'DD/MM/YYYY';
+  bool _darkMode      = themeNotifier.isDark;
+  bool _notifications = true;
+  bool _emailAlerts   = false;
+  bool _overdueAlerts = true;
+  String _currency    = '₹ INR';
+  String _dateFormat  = 'DD/MM/YYYY';
 
-  // ── Design Tokens ───────────────────────────────────────────
-  static const _primary = Color(0xFF1A1F36);
   static const _accent  = Color(0xFF4F6EF7);
   static const _danger  = Color(0xFFFF5B5B);
-  static const _bg      = Color(0xFFF4F6FC);
-  static const _surface = Color(0xFFFFFFFF);
-  static const _textSub = Color(0xFF8A94A6);
   static const _success = Color(0xFF00C48C);
 
   Future<void> _logout() async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Sign Out',
             style: TextStyle(fontWeight: FontWeight.w700)),
-        content: const Text(
-            'Are you sure you want to sign out?',
-            style: TextStyle(color: _textSub, height: 1.4)),
+        content: const Text('Are you sure you want to sign out?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel',
-                style: TextStyle(color: _textSub)),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: _danger,
               foregroundColor: Colors.white,
-              elevation: 0,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
             ),
@@ -60,7 +49,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
-
     if (confirm == true) {
       await _authService.logout();
       if (mounted) {
@@ -72,16 +60,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = themeNotifier.isDark;
+    final bg = isDark ? const Color(0xFF0F1117) : const Color(0xFFF4F6FC);
+    final surface = isDark ? const Color(0xFF1A1F2E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1F36);
+    final textSub = isDark ? const Color(0xFF8A94A6) : const Color(0xFF8A94A6);
+    final divColor = isDark ? const Color(0xFF2A2F42) : const Color(0xFFF4F6FC);
+
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: _bg,
+        backgroundColor: bg,
         elevation: 0,
-        foregroundColor: _primary,
+        foregroundColor: textPrimary,
         centerTitle: true,
-        title: const Text('Settings',
+        title: Text('Settings',
             style: TextStyle(
-                fontWeight: FontWeight.w700, fontSize: 17)),
+                fontWeight: FontWeight.w700,
+                fontSize: 17,
+                color: textPrimary)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -90,9 +87,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
 
             // ── Appearance ───────────────────────────────
-            _sectionLabel('Appearance'),
+            _sectionLabel('Appearance', textSub),
             const SizedBox(height: 12),
-            _settingsCard([
+            _card(surface, [
               _switchTile(
                 icon: Icons.dark_mode_rounded,
                 iconBg: const Color(0xFF1A1F36),
@@ -100,20 +97,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Dark Mode',
                 subtitle: 'Switch to dark theme',
                 value: _darkMode,
+                textPrimary: textPrimary,
+                textSub: textSub,
                 onChanged: (v) {
                   setState(() => _darkMode = v);
-                  _showSnack(
-                      'Dark mode ${v ? 'enabled' : 'disabled'} — coming soon!');
+                  themeNotifier.toggle(v);
                 },
               ),
-            ]),
+            ], divColor),
 
             const SizedBox(height: 20),
 
             // ── Notifications ────────────────────────────
-            _sectionLabel('Notifications'),
+            _sectionLabel('Notifications', textSub),
             const SizedBox(height: 12),
-            _settingsCard([
+            _card(surface, [
               _switchTile(
                 icon: Icons.notifications_rounded,
                 iconBg: const Color(0xFFEEF2FF),
@@ -121,10 +119,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Push Notifications',
                 subtitle: 'Get alerts on your device',
                 value: _notifications,
-                onChanged: (v) =>
-                    setState(() => _notifications = v),
+                textPrimary: textPrimary,
+                textSub: textSub,
+                onChanged: (v) => setState(() => _notifications = v),
               ),
-              _divider(),
+              Divider(height: 1, color: divColor, indent: 56),
               _switchTile(
                 icon: Icons.warning_rounded,
                 iconBg: const Color(0xFFFFF3F3),
@@ -132,10 +131,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Overdue Alerts',
                 subtitle: 'Alert when fees are overdue',
                 value: _overdueAlerts,
-                onChanged: (v) =>
-                    setState(() => _overdueAlerts = v),
+                textPrimary: textPrimary,
+                textSub: textSub,
+                onChanged: (v) => setState(() => _overdueAlerts = v),
               ),
-              _divider(),
+              Divider(height: 1, color: divColor, indent: 56),
               _switchTile(
                 icon: Icons.email_rounded,
                 iconBg: const Color(0xFFF0FFF8),
@@ -143,172 +143,147 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Email Alerts',
                 subtitle: 'Receive email notifications',
                 value: _emailAlerts,
-                onChanged: (v) =>
-                    setState(() => _emailAlerts = v),
+                textPrimary: textPrimary,
+                textSub: textSub,
+                onChanged: (v) => setState(() => _emailAlerts = v),
               ),
-            ]),
+            ], divColor),
 
             const SizedBox(height: 20),
 
             // ── Preferences ──────────────────────────────
-            _sectionLabel('Preferences'),
+            _sectionLabel('Preferences', textSub),
             const SizedBox(height: 12),
-            _settingsCard([
+            _card(surface, [
               _dropdownTile(
                 icon: Icons.currency_rupee_rounded,
                 iconBg: const Color(0xFFF0FFF8),
                 iconColor: _success,
                 title: 'Currency',
                 value: _currency,
+                textPrimary: textPrimary,
                 items: ['₹ INR', '\$ USD', '€ EUR', '£ GBP'],
-                onChanged: (v) =>
-                    setState(() => _currency = v!),
+                onChanged: (v) => setState(() => _currency = v!),
               ),
-              _divider(),
+              Divider(height: 1, color: divColor, indent: 56),
               _dropdownTile(
-                icon: Icons.calendar_month_rounded,
+                icon: Icons.calendar_today_rounded,
                 iconBg: const Color(0xFFEEF2FF),
                 iconColor: _accent,
                 title: 'Date Format',
                 value: _dateFormat,
-                items: [
-                  'DD/MM/YYYY',
-                  'MM/DD/YYYY',
-                  'YYYY-MM-DD'
-                ],
-                onChanged: (v) =>
-                    setState(() => _dateFormat = v!),
+                textPrimary: textPrimary,
+                items: ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'],
+                onChanged: (v) => setState(() => _dateFormat = v!),
               ),
-            ]),
+            ], divColor),
 
             const SizedBox(height: 20),
 
             // ── About ────────────────────────────────────
-            _sectionLabel('About'),
+            _sectionLabel('About', textSub),
             const SizedBox(height: 12),
-            _settingsCard([
+            _card(surface, [
               _infoTile(
                 icon: Icons.info_outline_rounded,
                 iconBg: const Color(0xFFEEF2FF),
                 iconColor: _accent,
                 title: 'App Version',
                 value: '1.0.0',
+                textPrimary: textPrimary,
+                textSub: textSub,
               ),
-              _divider(),
+              Divider(height: 1, color: divColor, indent: 56),
               _infoTile(
                 icon: Icons.school_rounded,
                 iconBg: const Color(0xFFF0FFF8),
                 iconColor: _success,
                 title: 'Institution',
                 value: 'GLS University',
+                textPrimary: textPrimary,
+                textSub: textSub,
               ),
-              _divider(),
+              Divider(height: 1, color: divColor, indent: 56),
               _infoTile(
-                icon: Icons.code_rounded,
-                iconBg: const Color(0xFFEEF2FF),
-                iconColor: _accent,
+                icon: Icons.phone_android_rounded,
+                iconBg: const Color(0xFFFFF3F3),
+                iconColor: _danger,
                 title: 'Built With',
                 value: 'Flutter + Firebase',
+                textPrimary: textPrimary,
+                textSub: textSub,
               ),
-              _divider(),
+            ], divColor),
+
+            const SizedBox(height: 20),
+
+            // ── Quick Links ──────────────────────────────
+            _sectionLabel('Quick Links', textSub),
+            const SizedBox(height: 12),
+            _card(surface, [
               _tapTile(
                 icon: Icons.currency_exchange_rounded,
                 iconBg: const Color(0xFFF0FFF8),
-                iconColor: const Color(0xFF00C48C),
-                title: 'Live Currency Rates',
-                onTap: () =>
-                    Navigator.pushNamed(context, '/currency'),
-              ),
-              _divider(),
-              _tapTile(
-                icon: Icons.privacy_tip_outlined,
-                iconBg: const Color(0xFFFFFBF0),
-                iconColor: const Color(0xFFFFA940),
-                title: 'Privacy Policy',
-                onTap: () => _showSnack('Opening Privacy Policy...'),
-              ),
-              _divider(),
-              _tapTile(
-                icon: Icons.help_outline_rounded,
-                iconBg: const Color(0xFFF0FFF8),
                 iconColor: _success,
-                title: 'Help & Support',
-                onTap: () => _showSnack('Opening Help & Support...'),
+                title: 'Live Currency Rates',
+                textPrimary: textPrimary,
+                textSub: textSub,
+                onTap: () => Navigator.pushNamed(context, '/currency'),
               ),
-            ]),
+            ], divColor),
 
             const SizedBox(height: 28),
 
             // ── Sign Out ─────────────────────────────────
             SizedBox(
               width: double.infinity,
-              height: 54,
+              height: 52,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _danger.withOpacity(.08),
-                  foregroundColor: _danger,
+                  backgroundColor: _danger,
+                  foregroundColor: Colors.white,
                   elevation: 0,
-                  side: BorderSide(
-                      color: _danger.withOpacity(.3),
-                      width: 1.5),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),
                 ),
                 onPressed: _logout,
-                icon: const Icon(Icons.logout_rounded,
-                    size: 20),
+                icon: const Icon(Icons.logout_rounded, size: 18),
                 label: const Text('Sign Out',
                     style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15)),
+                        fontSize: 15, fontWeight: FontWeight.w700)),
               ),
             ),
 
-            const SizedBox(height: 16),
-
-            Center(
-              child: Text(
-                'Promoted by Gujarat Law Society Since 1927',
-                style: TextStyle(
-                    fontSize: 11,
-                    color: _textSub.withOpacity(.6)),
-              ),
-            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
-  // ── Helpers ──────────────────────────────────────────────────
-  Widget _sectionLabel(String text) => Text(text,
-      style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-          color: _textSub,
-          letterSpacing: .4));
+  Widget _sectionLabel(String label, Color color) => Text(
+        label,
+        style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: color,
+            letterSpacing: 1),
+      );
 
-  Widget _settingsCard(List<Widget> children) {
-    return Container(
-      decoration: BoxDecoration(
-        color: _surface,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-              color: _primary.withOpacity(.05),
-              blurRadius: 10,
-              offset: const Offset(0, 3)),
-        ],
-      ),
-      child: Column(children: children),
-    );
-  }
-
-  Widget _divider() => Divider(
-      height: 1,
-      color: _bg,
-      indent: 56,
-      endIndent: 0);
+  Widget _card(Color surface, List<Widget> children, Color divColor) =>
+      Container(
+        decoration: BoxDecoration(
+          color: surface,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(.05),
+                blurRadius: 10,
+                offset: const Offset(0, 3)),
+          ],
+        ),
+        child: Column(children: children),
+      );
 
   Widget _switchTile({
     required IconData icon,
@@ -317,17 +292,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required String title,
     required String subtitle,
     required bool value,
+    required Color textPrimary,
+    required Color textSub,
     required ValueChanged<bool> onChanged,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(10)),
+              color: iconBg, borderRadius: BorderRadius.circular(10)),
           child: Icon(icon, size: 18, color: iconColor),
         ),
         const SizedBox(width: 14),
@@ -336,21 +311,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: _primary)),
+                      color: textPrimary)),
               Text(subtitle,
-                  style: const TextStyle(
-                      fontSize: 11.5, color: _textSub)),
+                  style: TextStyle(fontSize: 11.5, color: textSub)),
             ],
           ),
         ),
-        Switch.adaptive(
-          value: value,
-          onChanged: onChanged,
-          activeColor: _accent,
-        ),
+        Switch.adaptive(value: value, onChanged: onChanged, activeColor: _accent),
       ]),
     );
   }
@@ -361,38 +331,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required Color iconColor,
     required String title,
     required String value,
+    required Color textPrimary,
     required List<String> items,
     required ValueChanged<String?> onChanged,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(10)),
+              color: iconBg, borderRadius: BorderRadius.circular(10)),
           child: Icon(icon, size: 18, color: iconColor),
         ),
         const SizedBox(width: 14),
         Expanded(
           child: Text(title,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: _primary)),
+                  color: textPrimary)),
         ),
         DropdownButton<String>(
           value: value,
           underline: const SizedBox(),
+          dropdownColor: themeNotifier.isDark ? const Color(0xFF1A1F2E) : Colors.white,
           style: const TextStyle(
-              fontSize: 13,
-              color: _accent,
-              fontWeight: FontWeight.w600),
+              fontSize: 13, color: _accent, fontWeight: FontWeight.w600),
           items: items
-              .map((e) => DropdownMenuItem(
-                  value: e, child: Text(e)))
+              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
               .toList(),
           onChanged: onChanged,
         ),
@@ -406,31 +373,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required Color iconColor,
     required String title,
     required String value,
+    required Color textPrimary,
+    required Color textSub,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: 16, vertical: 13),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
       child: Row(children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(10)),
+              color: iconBg, borderRadius: BorderRadius.circular(10)),
           child: Icon(icon, size: 18, color: iconColor),
         ),
         const SizedBox(width: 14),
         Expanded(
           child: Text(title,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: _primary)),
+                  color: textPrimary)),
         ),
         Text(value,
-            style: const TextStyle(
-                fontSize: 13,
-                color: _textSub,
-                fontWeight: FontWeight.w500)),
+            style: TextStyle(
+                fontSize: 13, color: textSub, fontWeight: FontWeight.w500)),
       ]),
     );
   }
@@ -440,45 +405,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required Color iconBg,
     required Color iconColor,
     required String title,
+    required Color textPrimary,
+    required Color textSub,
     required VoidCallback onTap,
   }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 16, vertical: 13),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
         child: Row(children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: iconBg,
-                borderRadius: BorderRadius.circular(10)),
+                color: iconBg, borderRadius: BorderRadius.circular(10)),
             child: Icon(icon, size: 18, color: iconColor),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Text(title,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: _primary)),
+                    color: textPrimary)),
           ),
-          const Icon(Icons.chevron_right_rounded,
-              color: _textSub, size: 20),
+          Icon(Icons.chevron_right_rounded, color: textSub, size: 20),
         ]),
       ),
     );
-  }
-
-  void _showSnack(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg),
-      backgroundColor: _accent,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12)),
-      margin: const EdgeInsets.all(16),
-    ));
   }
 }
