@@ -721,7 +721,7 @@ class ReceiptService {
         pw.Text(
           label,
           style: const pw.TextStyle(
-            color: PdfColor.fromInt(0xFF8A94A6),
+            color: PdfColor.fromInt(0xFF8A94A6)
             fontSize: 9,
           ),
         ),
