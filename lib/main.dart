@@ -17,7 +17,11 @@ void main() async {
   await Firebase.initializeApp();
 
   // ── Initialize Notifications ──────────────────────────
-  await NotificationService().init();
+  try {
+    await NotificationService().init();
+  } catch (e) {
+    debugPrint('Notification init failed: $e');
+  }
 
   runApp(const MyApp());
 }
