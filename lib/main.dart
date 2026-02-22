@@ -8,6 +8,7 @@ import 'screens/add_student_screen.dart';
 import 'screens/analytics_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/admin_panel_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         '/analytics':   (_) => const AnalyticsScreen(),
         '/profile':     (_) => const ProfileScreen(),
         '/settings':    (_) => const SettingsScreen(),
+        '/admin':       (_) => const AdminPanelScreen(),
       },
     );
   }
