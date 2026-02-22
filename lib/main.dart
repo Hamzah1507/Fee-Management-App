@@ -10,10 +10,15 @@ import 'screens/profile_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/admin_panel_screen.dart';
 import 'screens/currency_screen.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // ── Initialize Notifications ──────────────────────────
+  await NotificationService().init();
+
   runApp(const MyApp());
 }
 
