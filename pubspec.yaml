@@ -29,6 +29,9 @@ dependencies:
   # Sharing
   share_plus: ^10.0.0
 
+  # HTTP (REST API)
+  http: ^1.2.0
+
   # Other
   path_provider: ^2.0.15
   cupertino_icons: ^1.0.8
