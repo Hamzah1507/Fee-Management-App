@@ -18,6 +18,16 @@ migrate_working_dir/
 *.iws
 .idea/
 
+# 🔥 Flutter ephemeral (MUST IGNORE)
+**/flutter/ephemeral/
+**/.plugin_symlinks/
+
+# 🔥 Git temp lock
+.git/index.lock
+
+# 🔥 OS noise
+Thumbs.db
+
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
