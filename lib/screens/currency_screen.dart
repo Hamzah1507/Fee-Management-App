@@ -351,7 +351,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
   String _fmtTime(DateTime d) {
     final h   = d.hour > 12 ? d.hour - 12 : d.hour;
     final min = d.minute.toString().padLeft(2, '0');
-    final ampm = d.hour >= 12 ? 'PM' : 'AM'
+    final ampm = d.hour >= 12 ? 'PM' : 'AM';
     return '$h:$min $ampm';
   }
 }
