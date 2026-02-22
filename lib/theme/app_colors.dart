@@ -8,7 +8,7 @@ class AppColors {
   static const card = Colors.white;
 
   static const success = Color(0xff16A34A);
-  static const warning = Color(0xffF59E0B)
+  static const warning = Color(0xffF59E0B);
   static const danger = Color(0xffEF4444);
 
   static const textPrimary = Color(0xff111827);
