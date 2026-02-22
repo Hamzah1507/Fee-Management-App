@@ -1,3 +1,6 @@
+# ⏳ wait a bit to batch rapid changes
+Start-Sleep -Seconds 5
+
 $changes = git status --porcelain
 
 if ($changes) {

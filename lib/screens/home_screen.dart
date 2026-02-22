@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/student.dart';
 import 'add_student_screen.dart';
 import 'analytics_screen.dart';
+import 'admin_panel_screen.dart';
 import 'profile_screen.dart';
 import 'student_details_screen.dart';
 
