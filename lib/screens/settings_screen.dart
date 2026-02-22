@@ -159,7 +159,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 iconColor: _success,
                 title: 'Currency',
                 value: _currency,
-                items: ['₹ INR', '$ USD', '€ EUR', '£ GBP'],
+                items: ['₹ INR', '\$ USD', '€ EUR', '£ GBP'],
                 onChanged: (v) =>
                     setState(() => _currency = v!),
               ),
