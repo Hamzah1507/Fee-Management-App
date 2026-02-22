@@ -10,7 +10,7 @@ New-Item $lockFile -ItemType File | Out-Null
 
 try {
     # Wait for filesystem to settle
-    Start-Sleep -Seconds 5
+    Start-Sleep -Seconds 2
 
     git add -A
 
