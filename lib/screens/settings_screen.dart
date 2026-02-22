@@ -211,6 +211,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               _divider(),
               _tapTile(
+                icon: Icons.currency_exchange_rounded,
+                iconBg: const Color(0xFFF0FFF8),
+                iconColor: const Color(0xFF00C48C),
+                title: 'Live Currency Rates',
+                onTap: () =>
+                    Navigator.pushNamed(context, '/currency'),
+              ),
+              _divider(),
+              _tapTile(
                 icon: Icons.privacy_tip_outlined,
                 iconBg: const Color(0xFFFFFBF0),
                 iconColor: const Color(0xFFFFA940),
