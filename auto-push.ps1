@@ -1,23 +1,45 @@
-Start-Sleep -Seconds 5
+# ⏳ Wait for filesystem + git to settle
+Start-Sleep -Seconds 4
 
-$changes = git status --porcelain
+# Refresh git index
+git update-index -q --refresh
 
-if ($changes) {
-    # Get first changed file
-    $file = ($changes | Select-Object -First 1).ToString().Trim()
+# Get changed files
+$changesRaw = git status --porcelain
 
-    # Extract file name
-    $fileName = $file -replace '^[ MADRCU\?]+', ''
-    $baseName = [System.IO.Path]::GetFileNameWithoutExtension($fileName)
-
-    # Make readable text
-    $messageName = $baseName -replace '_', ' '
-
-    $commitMessage = "feat: $messageName updated"
-
-    Write-Host "Auto commit message: $commitMessage"
-
-    git add .
-    git commit -m "$commitMessage"
-    git push
+if (-not $changesRaw) {
+    Write-Host "Git reports no changes."
+    exit
 }
+
+# Split into lines
+$lines = $changesRaw -split "`n"
+
+# Normalize slashes (Windows fix)
+$lines = $lines | ForEach-Object { $_.Trim() -replace '\\', '/' }
+
+# 🔥 Find first changed Dart file ANYWHERE in repo
+$dartLine = $lines | Where-Object { $_ -match "\.dart$" } | Select-Object -First 1
+
+if (-not $dartLine) {
+    Write-Host "No Dart file change detected."
+    exit
+}
+
+# Extract clean path
+$filePath = $dartLine -replace '^[ MADRCU\?]+', ''
+
+# ✅ ALWAYS use just the file name (root-safe)
+$fileNameOnly = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
+
+# Make readable
+$readableName = $fileNameOnly -replace '_', ' '
+
+# Build commit message
+$commitMessage = "feat: $readableName updated"
+
+Write-Host "Auto commit message: $commitMessage"
+
+git add .
+git commit -m "$commitMessage"
+git push
