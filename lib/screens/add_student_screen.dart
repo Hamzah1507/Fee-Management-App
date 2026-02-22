@@ -85,8 +85,8 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       });
 
       if (mounted) {
-        // 🔔 Show notification first
-        await NotificationService().showStudentAdded(
+        // 🔔 Show notification (don't await so screen stays)
+        NotificationService().showStudentAdded(
           studentName: _nameController.text.trim(),
           course: _courseController.text.trim(),
         );
@@ -100,7 +100,8 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
             margin: const EdgeInsets.all(16),
           ),
         );
-        Navigator.pop(context);
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (mounted) Navigator.pop(context);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
