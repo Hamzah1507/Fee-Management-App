@@ -26,6 +26,32 @@ void main() async {
   runApp(const MyApp());
 }
 
+// ── Smooth Fade+Slide Transition ──────────────────────────
+Route<dynamic> _buildRoute(Widget screen) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => screen,
+    transitionDuration: const Duration(milliseconds: 250),
+    reverseTransitionDuration: const Duration(milliseconds: 200),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final fadeTween = Tween<double>(begin: 0.0, end: 1.0).chain(
+        CurveTween(curve: Curves.easeInOut),
+      );
+      final slideTween = Tween<Offset>(
+        begin: const Offset(0.05, 0.0),
+        end: Offset.zero,
+      ).chain(CurveTween(curve: Curves.easeInOut));
+
+      return FadeTransition(
+        opacity: animation.drive(fadeTween),
+        child: SlideTransition(
+          position: animation.drive(slideTween),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -37,21 +63,33 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorSchemeSeed: Colors.indigo,
         useMaterial3: true,
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: ZoomPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          },
+        ),
       ),
 
-      // ── Named Routes ──────────────────────────────────────
+      // ── Named Routes with Smooth Transitions ─────────────
       initialRoute: '/',
-      routes: {
-        '/':            (_) => const WelcomeScreen(),
-        '/login':       (_) => const LoginScreen(),
-        '/register':    (_) => const RegisterScreen(),
-        '/home':        (_) => const HomeScreen(),
-        '/add-student': (_) => const AddStudentScreen(),
-        '/analytics':   (_) => const AnalyticsScreen(),
-        '/profile':     (_) => const ProfileScreen(),
-        '/settings':    (_) => const SettingsScreen(),
-        '/admin':       (_) => const AdminPanelScreen(),
-        '/currency':    (_) => const CurrencyScreen(),
+      onGenerateRoute: (settings) {
+        final routes = {
+          '/':            const WelcomeScreen(),
+          '/login':       const LoginScreen(),
+          '/register':    const RegisterScreen(),
+          '/home':        const HomeScreen(),
+          '/add-student': const AddStudentScreen(),
+          '/analytics':   const AnalyticsScreen(),
+          '/profile':     const ProfileScreen(),
+          '/settings':    const SettingsScreen(),
+          '/admin':       const AdminPanelScreen(),
+          '/currency':    const CurrencyScreen(),
+        };
+
+        final screen = routes[settings.name];
+        if (screen != null) return _buildRoute(screen);
+        return null;
       },
     );
   }
