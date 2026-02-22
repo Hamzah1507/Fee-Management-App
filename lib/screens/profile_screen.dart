@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'welcome_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -58,11 +57,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (confirm == true) {
       await _authService.logout();
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-              builder: (_) => const WelcomeScreen()),
-          (route) => false,
-        );
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/', (route) => false);
       }
     }
   }
@@ -83,6 +79,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text('Profile',
             style: TextStyle(
                 fontWeight: FontWeight.w700, fontSize: 17)),
+        actions: [
+          IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: _accent.withOpacity(.10),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.settings_rounded,
+                  color: _accent, size: 20),
+            ),
+            onPressed: () =>
+                Navigator.pushNamed(context, '/settings'),
+          ),
+          const SizedBox(width: 6),
+        ],
       ),
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance
