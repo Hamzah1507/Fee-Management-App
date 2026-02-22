@@ -7,7 +7,8 @@ plugins {
 
 android {
     namespace = "com.example.fees_management_app"
-    compileSdk = flutter.compileSdkVersion
+
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -22,8 +23,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.fees_management_app"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 31
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
