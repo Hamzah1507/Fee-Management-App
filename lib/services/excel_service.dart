@@ -23,15 +23,12 @@ class ExcelService {
       final List<int> bytes = workbook.saveAsStream();
       workbook.dispose();
 
-      // Save to temp file
       final dir = await getTemporaryDirectory();
       final now = DateTime.now();
-      final fileName =
-          'GLS_FeeReport_${now.day}-${now.month}-${now.year}.xlsx';
+      final fileName = 'GLS_FeeReport_${now.day}-${now.month}-${now.year}.xlsx';
       final file = File('${dir.path}/$fileName');
       await file.writeAsBytes(bytes);
 
-      // Share
       await Share.shareXFiles(
         [XFile(file.path)],
         subject: 'GLS University Fee Report',
@@ -44,8 +41,7 @@ class ExcelService {
             content: Text('Export failed: $e'),
             backgroundColor: const Color(0xFFFF5B5B),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -56,15 +52,12 @@ class ExcelService {
   // ═══════════════════════════════════════════════════════════
   // SHEET 1 — SUMMARY
   // ═══════════════════════════════════════════════════════════
-  static void _buildSummarySheet(
-      Workbook workbook, List<Student> students) {
+  static void _buildSummarySheet(Workbook workbook, List<Student> students) {
     final sheet = workbook.worksheets.addWithName('Summary');
 
-    // Column widths
     sheet.getRangeByName('A1:A20').columnWidth = 28;
     sheet.getRangeByName('B1:B20').columnWidth = 22;
 
-    // Title
     final title = sheet.getRangeByName('A1:B1');
     title.merge();
     title.setText('GLS University — Fee Summary Report');
@@ -76,29 +69,20 @@ class ExcelService {
     title.cellStyle.vAlign = VAlignType.center;
     sheet.getRangeByName('A1').rowHeight = 36;
 
-    // Generated date
     final dateRow = sheet.getRangeByName('A2:B2');
     dateRow.merge();
-    dateRow.setText(
-        'Generated: ${_fmtDate(DateTime.now())}');
+    dateRow.setText('Generated: ${_fmtDate(DateTime.now())}');
     dateRow.cellStyle.fontSize = 10;
     dateRow.cellStyle.fontColor = '#8A94A6';
     dateRow.cellStyle.hAlign = HAlignType.center;
 
-    // Stats
     final totalStudents = students.length;
-    final totalFees =
-        students.fold<int>(0, (s, e) => s + e.totalFees);
-    final totalPaid =
-        students.fold<int>(0, (s, e) => s + e.paidFees);
+    final totalFees = students.fold<int>(0, (s, e) => s + e.totalFees);
+    final totalPaid = students.fold<int>(0, (s, e) => s + e.paidFees);
     final totalPending = totalFees - totalPaid;
-    final fullyPaid =
-        students.where((s) => s.pendingFees == 0).length;
-    final overdue =
-        students.where((s) => s.isOverdue).length;
-    final pct = totalFees > 0
-        ? (totalPaid / totalFees * 100).toStringAsFixed(1)
-        : '0.0';
+    final fullyPaid = students.where((s) => s.pendingFees == 0).length;
+    final overdue = students.where((s) => s.isOverdue).length;
+    final pct = totalFees > 0 ? (totalPaid / totalFees * 100).toStringAsFixed(1) : '0.0';
 
     final rows = [
       ['Total Students', '$totalStudents'],
@@ -117,43 +101,27 @@ class ExcelService {
 
       labelCell.setText(rows[i][0]);
       valueCell.setText(rows[i][1]);
-
       labelCell.cellStyle.fontSize = 11;
       valueCell.cellStyle.fontSize = 11;
       valueCell.cellStyle.bold = true;
       labelCell.rowHeight = 24;
 
-      // Alternate row color
       if (i % 2 == 0) {
         labelCell.cellStyle.backColor = '#F4F6FC';
         valueCell.cellStyle.backColor = '#F4F6FC';
       }
-
-      // Color overdue red
-      if (rows[i][0] == 'Overdue Students' && overdue > 0) {
-        valueCell.cellStyle.fontColor = '#FF5B5B';
-      }
-      // Color collected green
-      if (rows[i][0] == 'Total Collected') {
-        valueCell.cellStyle.fontColor = '#00C48C';
-      }
-      // Color pending red
-      if (rows[i][0] == 'Total Pending' &&
-          totalPending > 0) {
-        valueCell.cellStyle.fontColor = '#FF5B5B';
-      }
+      if (rows[i][0] == 'Overdue Students' && overdue > 0) valueCell.cellStyle.fontColor = '#FF5B5B';
+      if (rows[i][0] == 'Total Collected') valueCell.cellStyle.fontColor = '#00C48C';
+      if (rows[i][0] == 'Total Pending' && totalPending > 0) valueCell.cellStyle.fontColor = '#FF5B5B';
     }
   }
 
   // ═══════════════════════════════════════════════════════════
   // SHEET 2 — ALL STUDENTS
   // ═══════════════════════════════════════════════════════════
-  static void _buildStudentSheet(
-      Workbook workbook, List<Student> students) {
-    final sheet =
-        workbook.worksheets.addWithName('All Students');
+  static void _buildStudentSheet(Workbook workbook, List<Student> students) {
+    final sheet = workbook.worksheets.addWithName('All Students');
 
-    // Column widths
     sheet.getRangeByIndex(1, 1).columnWidth = 5;
     sheet.getRangeByIndex(1, 2).columnWidth = 22;
     sheet.getRangeByIndex(1, 3).columnWidth = 18;
@@ -164,12 +132,7 @@ class ExcelService {
     sheet.getRangeByIndex(1, 8).columnWidth = 14;
     sheet.getRangeByIndex(1, 9).columnWidth = 16;
 
-    // Header row
-    final headers = [
-      '#', 'Student Name', 'Course', 'Semester',
-      'Total Fees', 'Paid Fees', 'Pending Fees',
-      'Status', 'Due Date'
-    ];
+    final headers = ['#', 'Student Name', 'Course', 'Semester', 'Total Fees', 'Paid Fees', 'Pending Fees', 'Status', 'Due Date'];
 
     for (var i = 0; i < headers.length; i++) {
       final cell = sheet.getRangeByIndex(1, i + 1);
@@ -183,39 +146,22 @@ class ExcelService {
       cell.rowHeight = 28;
     }
 
-    // Data rows
     for (var i = 0; i < students.length; i++) {
       final s = students[i];
       final row = i + 2;
-      final isEven = i % 2 == 0;
-      final bg = isEven ? '#F4F6FC' : '#FFFFFF';
+      final bg = i % 2 == 0 ? '#F4F6FC' : '#FFFFFF';
 
       String status;
       String statusColor;
-      if (s.pendingFees == 0) {
-        status = 'PAID';
-        statusColor = '#00C48C';
-      } else if (s.isOverdue) {
-        status = 'OVERDUE';
-        statusColor = '#FF5B5B';
-      } else if (s.paidFees == 0) {
-        status = 'PENDING';
-        statusColor = '#FF5B5B';
-      } else {
-        status = 'PARTIAL';
-        statusColor = '#FFA940';
-      }
+      if (s.pendingFees == 0) { status = 'PAID'; statusColor = '#00C48C'; }
+      else if (s.isOverdue) { status = 'OVERDUE'; statusColor = '#FF5B5B'; }
+      else if (s.paidFees == 0) { status = 'PENDING'; statusColor = '#FF5B5B'; }
+      else { status = 'PARTIAL'; statusColor = '#FFA940'; }
 
       final rowData = [
-        '${i + 1}',
-        s.name,
-        s.course,
-        'Sem ${s.currentSemester}',
-        'Rs. ${s.totalFees}',
-        'Rs. ${s.paidFees}',
-        'Rs. ${s.pendingFees}',
-        status,
-        s.dueDate != null ? _fmtDate(s.dueDate!) : '—',
+        '${i + 1}', s.name, s.course, 'Sem ${s.currentSemester}',
+        'Rs. ${s.totalFees}', 'Rs. ${s.paidFees}', 'Rs. ${s.pendingFees}',
+        status, s.dueDate != null ? _fmtDate(s.dueDate!) : '—',
       ];
 
       for (var j = 0; j < rowData.length; j++) {
@@ -224,20 +170,9 @@ class ExcelService {
         cell.cellStyle.fontSize = 10;
         cell.cellStyle.backColor = bg;
         cell.rowHeight = 22;
-
-        // Status column color
-        if (j == 7) {
-          cell.cellStyle.fontColor = statusColor;
-          cell.cellStyle.bold = true;
-        }
-        // Pending red
-        if (j == 6 && s.pendingFees > 0) {
-          cell.cellStyle.fontColor = '#FF5B5B';
-        }
-        // Paid green
-        if (j == 5 && s.paidFees > 0) {
-          cell.cellStyle.fontColor = '#00C48C';
-        }
+        if (j == 7) { cell.cellStyle.fontColor = statusColor; cell.cellStyle.bold = true; }
+        if (j == 6 && s.pendingFees > 0) cell.cellStyle.fontColor = '#FF5B5B';
+        if (j == 5 && s.paidFees > 0) cell.cellStyle.fontColor = '#00C48C';
       }
     }
   }
@@ -245,12 +180,10 @@ class ExcelService {
   // ═══════════════════════════════════════════════════════════
   // SHEET 3 — PAYMENT HISTORY
   // ═══════════════════════════════════════════════════════════
-  static void _buildPaymentSheet(Workbook workbook,
-      List<Student> students, List<Payment> payments) {
-    final sheet =
-        workbook.worksheets.addWithName('Payment History');
+  static void _buildPaymentSheet(
+      Workbook workbook, List<Student> students, List<Payment> payments) {
+    final sheet = workbook.worksheets.addWithName('Payment History');
 
-    // Column widths
     sheet.getRangeByIndex(1, 1).columnWidth = 5;
     sheet.getRangeByIndex(1, 2).columnWidth = 22;
     sheet.getRangeByIndex(1, 3).columnWidth = 18;
@@ -259,11 +192,7 @@ class ExcelService {
     sheet.getRangeByIndex(1, 6).columnWidth = 14;
     sheet.getRangeByIndex(1, 7).columnWidth = 18;
 
-    // Header
-    final headers = [
-      '#', 'Student Name', 'Course', 'Semester',
-      'Amount Paid', 'Method', 'Date & Time'
-    ];
+    final headers = ['#', 'Student Name', 'Course', 'Semester', 'Amount Paid', 'Method', 'Date & Time'];
 
     for (var i = 0; i < headers.length; i++) {
       final cell = sheet.getRangeByIndex(1, i + 1);
@@ -276,27 +205,24 @@ class ExcelService {
       cell.rowHeight = 28;
     }
 
-    // Build student lookup
+    // ✅ Build student lookup as fallback for old payments
     final studentMap = {for (final s in students) s.id: s};
 
-    // Sort payments newest first
-    final sorted = [...payments]
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final sorted = [...payments]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     for (var i = 0; i < sorted.length; i++) {
       final p = sorted[i];
-      final s = studentMap[p.studentId];
       final row = i + 2;
       final bg = i % 2 == 0 ? '#F4F6FC' : '#FFFFFF';
 
+      // ✅ Use name/course stored in payment, fallback to student lookup, then '—'
+      final name   = p.studentName.isNotEmpty ? p.studentName : (studentMap[p.studentId]?.name ?? '—');
+      final course = p.course.isNotEmpty       ? p.course      : (studentMap[p.studentId]?.course ?? '—');
+
       final rowData = [
-        '${i + 1}',
-        s?.name ?? '—',
-        s?.course ?? '—',
-        'Sem ${p.semester}',
-        'Rs. ${p.amount}',
-        p.method.toUpperCase(),
-        _fmtDateTime(p.createdAt),
+        '${i + 1}', name, course,
+        'Sem ${p.semester}', 'Rs. ${p.amount}',
+        p.method.toUpperCase(), _fmtDateTime(p.createdAt),
       ];
 
       for (var j = 0; j < rowData.length; j++) {
@@ -306,22 +232,12 @@ class ExcelService {
         cell.cellStyle.backColor = bg;
         cell.rowHeight = 22;
 
-        // Amount green
-        if (j == 4) {
-          cell.cellStyle.fontColor = '#00C48C';
-          cell.cellStyle.bold = true;
-        }
-        // Method color
+        if (j == 4) { cell.cellStyle.fontColor = '#00C48C'; cell.cellStyle.bold = true; }
         if (j == 5) {
           switch (p.method.toLowerCase()) {
-            case 'upi':
-              cell.cellStyle.fontColor = '#7C3AED';
-              break;
-            case 'bank':
-              cell.cellStyle.fontColor = '#0284C7';
-              break;
-            default:
-              cell.cellStyle.fontColor = '#00C48C';
+            case 'upi':  cell.cellStyle.fontColor = '#7C3AED'; break;
+            case 'bank': cell.cellStyle.fontColor = '#0284C7'; break;
+            default:     cell.cellStyle.fontColor = '#00C48C';
           }
           cell.cellStyle.bold = true;
         }
@@ -331,10 +247,7 @@ class ExcelService {
 
   // ── Helpers ──────────────────────────────────────────────────
   static String _fmtDate(DateTime d) {
-    const months = [
-      '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return '${d.day} ${months[d.month]} ${d.year}';
   }
 

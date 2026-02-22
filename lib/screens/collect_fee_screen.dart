@@ -18,7 +18,6 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
   int _semester = 1;
   bool _loading = false;
 
-  // ── Design Tokens ───────────────────────────────────────────
   static const _primary = Color(0xFF1A1F36);
   static const _accent  = Color(0xFF4F6EF7);
   static const _danger  = Color(0xFFFF5B5B);
@@ -63,16 +62,17 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
           .collection('payments')
           .doc();
 
-      // Update paid fees + current semester
       await studentRef.update({
         'paidFees': FieldValue.increment(amount),
         'currentSemester': _semester,
       });
 
-      // Save payment with semester
+      // ✅ FIX: Now includes studentName and course
       final payment = Payment(
         id: paymentRef.id,
         studentId: widget.student.id,
+        studentName: widget.student.name,   // ✅
+        course: widget.student.course,      // ✅
         amount: amount,
         method: _method,
         semester: _semester,
@@ -82,7 +82,6 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
       await paymentRef.set(payment.toMap());
 
       if (mounted) {
-        // 🔔 Show notification
         await NotificationService().showFeeCollected(
           studentName: widget.student.name,
           amount: amount,
@@ -104,8 +103,7 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
         content: Text(msg),
         backgroundColor: isError ? _danger : _accent,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
       ),
     );
@@ -122,10 +120,8 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
         elevation: 0,
         foregroundColor: _primary,
         centerTitle: true,
-        title: const Text(
-          'Collect Fee',
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17),
-        ),
+        title: const Text('Collect Fee',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -140,11 +136,7 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
                 color: _surface,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
-                  BoxShadow(
-                    color: _primary.withOpacity(.06),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
+                  BoxShadow(color: _primary.withOpacity(.06), blurRadius: 12, offset: const Offset(0, 4)),
                 ],
               ),
               child: Row(
@@ -157,13 +149,8 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
-                      child: Text(
-                        widget.student.name[0].toUpperCase(),
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 18,
-                            color: _accent),
-                      ),
+                      child: Text(widget.student.name[0].toUpperCase(),
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: _accent)),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -172,29 +159,18 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(widget.student.name,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15,
-                                color: _primary)),
+                            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: _primary)),
                         Text(widget.student.course,
-                            style: const TextStyle(
-                                fontSize: 12.5, color: _textSub)),
+                            style: const TextStyle(fontSize: 12.5, color: _textSub)),
                       ],
                     ),
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text('Pending',
-                          style:
-                              TextStyle(fontSize: 11, color: _textSub)),
-                      Text(
-                        '₹$pending',
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: _danger),
-                      ),
+                      const Text('Pending', style: TextStyle(fontSize: 11, color: _textSub)),
+                      Text('₹$pending',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: _danger)),
                     ],
                   ),
                 ],
@@ -203,10 +179,7 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
 
             const SizedBox(height: 24),
             const Text('Payment Details',
-                style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: _primary)),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: _primary)),
             const SizedBox(height: 14),
 
             // ── Semester Selector ────────────────────────────
@@ -217,18 +190,14 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
                 color: _surface,
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
-                  BoxShadow(
-                      color: _primary.withOpacity(.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3)),
+                  BoxShadow(color: _primary.withOpacity(.05), blurRadius: 10, offset: const Offset(0, 3)),
                 ],
               ),
               child: GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(12),
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 4,
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,
@@ -243,21 +212,15 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       decoration: BoxDecoration(
-                        color: selected
-                            ? _accent
-                            : _accent.withOpacity(.08),
+                        color: selected ? _accent : _accent.withOpacity(.08),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
-                        child: Text(
-                          'Sem $sem',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color:
-                                selected ? Colors.white : _accent,
-                          ),
-                        ),
+                        child: Text('Sem $sem',
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: selected ? Colors.white : _accent)),
                       ),
                     ),
                   );
@@ -275,31 +238,22 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
                 color: _surface,
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
-                  BoxShadow(
-                      color: _primary.withOpacity(.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3)),
+                  BoxShadow(color: _primary.withOpacity(.05), blurRadius: 10, offset: const Offset(0, 3)),
                 ],
               ),
               child: TextField(
                 controller: _amountController,
                 keyboardType: TextInputType.number,
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: _primary),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: _primary),
                 decoration: InputDecoration(
                   hintText: 'Enter amount',
                   hintStyle: const TextStyle(color: _textSub),
-                  prefixIcon: const Icon(Icons.currency_rupee_rounded,
-                      color: _textSub, size: 20),
+                  prefixIcon: const Icon(Icons.currency_rupee_rounded, color: _textSub, size: 20),
                   suffixText: 'Max ₹$pending',
-                  suffixStyle:
-                      const TextStyle(color: _textSub, fontSize: 12),
+                  suffixStyle: const TextStyle(color: _textSub, fontSize: 12),
                   filled: true,
                   fillColor: Colors.transparent,
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
@@ -315,14 +269,11 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                _methodChip('cash', Icons.payments_rounded,
-                    const Color(0xFF00C48C)),
+                _methodChip('cash', Icons.payments_rounded, const Color(0xFF00C48C)),
                 const SizedBox(width: 10),
-                _methodChip('upi', Icons.phone_android_rounded,
-                    const Color(0xFF7C3AED)),
+                _methodChip('upi', Icons.phone_android_rounded, const Color(0xFF7C3AED)),
                 const SizedBox(width: 10),
-                _methodChip('bank', Icons.account_balance_rounded,
-                    const Color(0xFF0284C7)),
+                _methodChip('bank', Icons.account_balance_rounded, const Color(0xFF0284C7)),
               ],
             ),
 
@@ -338,23 +289,16 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
                   foregroundColor: Colors.white,
                   elevation: 4,
                   shadowColor: _accent.withOpacity(.4),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
                 onPressed: _loading ? null : _collectFee,
                 child: _loading
                     ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2.5),
-                      )
+                        width: 22, height: 22,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
                     : Text(
                         'Collect ₹${_amountController.text.isEmpty ? '0' : _amountController.text} — Sem $_semester',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15),
-                      ),
+                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
               ),
             ),
           ],
@@ -363,14 +307,8 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
     );
   }
 
-  Widget _label(String text) => Text(
-        text,
-        style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: _textSub,
-            letterSpacing: .3),
-      );
+  Widget _label(String text) => Text(text,
+      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _textSub, letterSpacing: .3));
 
   Widget _methodChip(String value, IconData icon, Color color) {
     final selected = _method == value;
@@ -386,17 +324,12 @@ class _CollectFeeScreenState extends State<CollectFeeScreen> {
           ),
           child: Column(
             children: [
-              Icon(icon,
-                  size: 20,
-                  color: selected ? Colors.white : color),
+              Icon(icon, size: 20, color: selected ? Colors.white : color),
               const SizedBox(height: 4),
-              Text(
-                value.toUpperCase(),
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: selected ? Colors.white : color),
-              ),
+              Text(value.toUpperCase(),
+                  style: TextStyle(
+                      fontSize: 11, fontWeight: FontWeight.w700,
+                      color: selected ? Colors.white : color)),
             ],
           ),
         ),
