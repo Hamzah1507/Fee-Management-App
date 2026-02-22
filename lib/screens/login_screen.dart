@@ -8,17 +8,13 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
-    with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen> {
   final _emailController    = TextEditingController();
   final _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
 
   bool _loading = false;
   bool _obscure = true;
-  late AnimationController _animController;
-  late Animation<double> _fadeAnim;
-  late Animation<Offset> _slideAnim;
 
   static const _navy    = Color(0xFF003087);
   static const _accent  = Color(0xFF4F6EF7);
@@ -29,47 +25,26 @@ class _LoginScreenState extends State<LoginScreen>
   static const _primary = Color(0xFF1A1F36);
 
   @override
-  void initState() {
-    super.initState();
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
-    _slideAnim = Tween<Offset>(begin: const Offset(0, .08), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _animController, curve: Curves.easeOut));
-    _animController.forward();
-  }
-
-  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _animController.dispose();
     super.dispose();
   }
 
   Future<void> _login() async {
     final email    = _emailController.text.trim();
     final password = _passwordController.text.trim();
-
     if (email.isEmpty || password.isEmpty) {
       _showSnack('Please fill all fields', isError: true);
       return;
     }
-
     setState(() => _loading = true);
-
     try {
       final user = await _authService.login(email: email, password: password);
-      if (user != null && mounted) {
-        // smooth replace — no back button to login
-        Navigator.pushReplacementNamed(context, '/home');
-      }
+      if (user != null && mounted) Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       if (mounted) _showSnack('Invalid email or password', isError: true);
     }
-
     if (mounted) setState(() => _loading = false);
   }
 
@@ -90,77 +65,56 @@ class _LoginScreenState extends State<LoginScreen>
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
-          child: Column(
-            children: [
-              // ── Navy Header ──────────────────────────────
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(24, 48, 24, 40),
-                decoration: const BoxDecoration(
-                  color: _navy,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(36),
-                    bottomRight: Radius.circular(36),
-                  ),
-                ),
-                child: FadeTransition(
-                  opacity: _fadeAnim,
-                  child: SlideTransition(
-                    position: _slideAnim,
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Image.asset('assets/images/gls_logo.png',
-                              height: 52, fit: BoxFit.contain),
-                        ),
-                        const SizedBox(height: 20),
-                        const Text('Fees Manager',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 26,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -.5)),
-                        const SizedBox(height: 6),
-                        const Text('GLS University — Fee Management System',
-                            style: TextStyle(
-                                color: Colors.white60, fontSize: 12.5)),
-                      ],
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeOut,
+            builder: (context, value, child) => Opacity(
+              opacity: value,
+              child: Transform.translate(offset: Offset(0, 16 * (1 - value)), child: child),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(24, 48, 24, 40),
+                  decoration: const BoxDecoration(
+                    color: _navy,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(36),
+                      bottomRight: Radius.circular(36),
                     ),
                   ),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                        child: Image.asset('assets/images/gls_logo.png', height: 52, fit: BoxFit.contain),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text('Fees Manager',
+                          style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -.5)),
+                      const SizedBox(height: 6),
+                      const Text('GLS University — Fee Management System',
+                          style: TextStyle(color: Colors.white60, fontSize: 12.5)),
+                    ],
+                  ),
                 ),
-              ),
-
-              // ── Form ─────────────────────────────────────
-              FadeTransition(
-                opacity: _fadeAnim,
-                child: Padding(
+                Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 8),
                       const Text('Welcome back!',
-                          style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w800,
-                              color: _primary,
-                              letterSpacing: -.4)),
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: _primary, letterSpacing: -.4)),
                       const SizedBox(height: 4),
                       const Text('Sign in to continue managing fees',
                           style: TextStyle(fontSize: 13.5, color: _textSub)),
                       const SizedBox(height: 28),
-
-                      _inputField(
-                        controller: _emailController,
-                        label: 'Email Address',
-                        icon: Icons.email_outlined,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
+                      _inputField(controller: _emailController, label: 'Email Address',
+                          icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress),
                       const SizedBox(height: 14),
                       _inputField(
                         controller: _passwordController,
@@ -168,20 +122,12 @@ class _LoginScreenState extends State<LoginScreen>
                         icon: Icons.lock_outline_rounded,
                         obscure: _obscure,
                         suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscure
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                            color: _textSub,
-                            size: 20,
-                          ),
-                          onPressed: () =>
-                              setState(() => _obscure = !_obscure),
+                          icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                              color: _textSub, size: 20),
+                          onPressed: () => setState(() => _obscure = !_obscure),
                         ),
                       ),
                       const SizedBox(height: 28),
-
-                      // Login Button
                       SizedBox(
                         width: double.infinity,
                         height: 54,
@@ -190,57 +136,38 @@ class _LoginScreenState extends State<LoginScreen>
                             backgroundColor: _accent,
                             foregroundColor: Colors.white,
                             elevation: 4,
-                            shadowColor: _accent.withOpacity(.4),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16)),
+                            shadowColor: const Color(0x664F6EF7),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                           onPressed: _loading ? null : _login,
                           child: _loading
-                              ? const SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(
-                                      color: Colors.white, strokeWidth: 2.5),
-                                )
-                              : const Text('Sign In',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700)),
+                              ? const SizedBox(width: 22, height: 22,
+                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                              : const Text('Sign In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                         ),
                       ),
                       const SizedBox(height: 24),
-
-                      // Register link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text("Don't have an account? ",
-                              style: TextStyle(
-                                  color: _textSub, fontSize: 13.5)),
+                          const Text("Don't have an account? ", style: TextStyle(color: _textSub, fontSize: 13.5)),
                           GestureDetector(
-                            onTap: () =>
-                                Navigator.pushNamed(context, '/register'),
+                            onTap: () => Navigator.pushNamed(context, '/register'),
                             child: const Text('Create Account',
-                                style: TextStyle(
-                                    color: _accent,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 13.5)),
+                                style: TextStyle(color: _accent, fontWeight: FontWeight.w700, fontSize: 13.5)),
                           ),
                         ],
                       ),
                       const SizedBox(height: 24),
                       Center(
-                        child: Text(
-                          'Promoted by Gujarat Law Society Since 1927',
-                          style: TextStyle(
-                              fontSize: 11, color: _textSub.withOpacity(.7)),
-                        ),
+                        child: Text('Promoted by Gujarat Law Society Since 1927',
+                            style: TextStyle(fontSize: 11, color: _textSub.withOpacity(.7))),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -259,19 +186,13 @@ class _LoginScreenState extends State<LoginScreen>
       decoration: BoxDecoration(
         color: _surface,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-              color: const Color(0xFF1A1F36).withOpacity(.05),
-              blurRadius: 10,
-              offset: const Offset(0, 3)),
-        ],
+        boxShadow: const [BoxShadow(color: Color(0x0D1A1F36), blurRadius: 10, offset: Offset(0, 3))],
       ),
       child: TextField(
         controller: controller,
         obscureText: obscure,
         keyboardType: keyboardType,
-        style: const TextStyle(
-            fontSize: 15, fontWeight: FontWeight.w500, color: _primary),
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: _primary),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: _textSub, fontSize: 14),
@@ -280,10 +201,7 @@ class _LoginScreenState extends State<LoginScreen>
           filled: true,
           fillColor: Colors.transparent,
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.none,
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
         ),
       ),
     );
