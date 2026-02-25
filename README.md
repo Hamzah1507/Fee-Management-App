@@ -1,24 +1,28 @@
-# 💰 Fee Management App
-
-A professional Flutter-based mobile application for managing student fee records at the college level.  
-Built with **Firebase** for authentication and real-time data storage.
+# 💰 Fees Manager
+A professional cross-platform mobile application for managing student fee records at the college level.  
+Built with **Flutter + Firebase** for authentication, real-time data storage, and a complete fee management workflow.
 
 ---
 
 ## 📱 Features
 
-- 🔐 **User Authentication** — Login & Register via Firebase Auth
-- 🏠 **Home Dashboard** — Live overview of all students with search
-- ➕ **Add Students** — Add students with course, fees and due date
-- 📋 **Fee Collection** — Collect fees with semester selector and payment method
-- 🧾 **PDF Receipts** — Generate semester-wise fee receipts with university branding
+- 🔐 **User Authentication** — Login & Register via Firebase Auth with validation
+- 🏠 **Home Dashboard** — Live overview of all students with search by name or course
+- ➕ **Add Students** — Add students with course, semester, fees and due date
+- 📋 **Fee Collection** — Collect fees with semester selector and payment method (Cash/UPI/Bank)
+- 🧾 **PDF Receipts** — Auto-generate semester-wise fee receipts with GLS University branding
 - 📊 **Analytics Screen** — Collection rate, monthly bar chart, course-wise breakdown
 - ⚠️ **Overdue Alerts** — Red badges for students past their due date
-- 📤 **Excel Export** — Export full fee report with 3 sheets (Summary, Students, Payments)
+- 📤 **Excel Export** — Export full fee report with 3 sheets (Summary, All Students, Payment History)
 - 👤 **Profile Screen** — View account info, quick stats and sign out
-- 🎨 **Professional UI** — Navy + blue design system with GLS University branding
-- 💦 **Splash Screen** — Custom splash with app icon
+- ⚙️ **Settings Screen** — Dark mode toggle, notification preferences, currency selector, date format
+- 🛡️ **Admin Panel** — System overview, financial summary, student status breakdown, recent transactions
+- 💱 **Live Currency Rates** — Real-time INR exchange rates via REST API (frankfurter.app)
+- 🔔 **Local Notifications** — Push notifications on fee collection and student addition
 - 🗂️ **Payment History** — Full timeline of all payments per student
+- 🎨 **Professional UI** — Navy + blue gradient design system with GLS University branding
+- 💦 **Splash Screen** — Custom splash screen with app icon
+- 🔀 **Named Routes** — Smooth fade+slide transitions between all screens
 
 ---
 
@@ -26,14 +30,17 @@ Built with **Firebase** for authentication and real-time data storage.
 
 | Technology | Details |
 |---|---|
-| Framework | Flutter |
+| Framework | Flutter (Cross Platform) |
 | Language | Dart |
-| Backend / Auth | Firebase Authentication + Firestore |
+| Backend / Auth | Firebase Authentication + Cloud Firestore |
 | PDF Generation | pdf + printing packages |
 | Excel Export | syncfusion_flutter_xlsio |
 | Charts | fl_chart |
 | File Sharing | share_plus |
-| State Management | Built-in Flutter State (setState + StreamBuilder) |
+| REST API | frankfurter.app (Live Currency Rates) |
+| Notifications | flutter_local_notifications |
+| State Management | setState + StreamBuilder + ChangeNotifier |
+| Navigation | Named Routes with Custom Transitions |
 
 ---
 
@@ -57,9 +64,14 @@ cd Fee-Management-App
 flutter pub get
 ```
 
-**3. Run the app**
+**3. Run the app (debug)**
 ```bash
 flutter run
+```
+
+**4. Run the app (release — recommended for demo)**
+```bash
+flutter run --release
 ```
 
 ---
@@ -68,25 +80,29 @@ flutter run
 
 ```
 lib/
-├── main.dart
+├── main.dart                          # App entry point, routes, theme
 ├── models/
-│   ├── student.dart
-│   └── payment.dart
+│   ├── student.dart                   # Student data model
+│   └── payment.dart                   # Payment data model
 ├── screens/
-│   ├── welcome_screen.dart
-│   ├── login_screen.dart
-│   ├── register_screen.dart
-│   ├── home_screen.dart
-│   ├── add_student_screen.dart
-│   ├── student_details_screen.dart
-│   ├── collect_fee_screen.dart
-│   ├── payment_history_screen.dart
-│   ├── analytics_screen.dart
-│   └── profile_screen.dart
+│   ├── welcome_screen.dart            # Welcome/landing screen
+│   ├── login_screen.dart              # Firebase login
+│   ├── register_screen.dart           # Firebase register
+│   ├── home_screen.dart               # Dashboard with student list
+│   ├── add_student_screen.dart        # Add new student form
+│   ├── student_details_screen.dart    # Student profile + fee summary
+│   ├── collect_fee_screen.dart        # Fee collection with payment method
+│   ├── payment_history_screen.dart    # Full payment timeline
+│   ├── analytics_screen.dart          # Charts + Excel export
+│   ├── profile_screen.dart            # User profile + quick stats
+│   ├── settings_screen.dart           # App settings + preferences
+│   ├── admin_panel_screen.dart        # Admin dashboard + system overview
+│   └── currency_screen.dart           # Live INR exchange rates (REST API)
 └── services/
-    ├── auth_service.dart
-    ├── receipt_service.dart
-    └── excel_service.dart
+    ├── auth_service.dart              # Firebase Auth logic
+    ├── receipt_service.dart           # PDF receipt generation
+    ├── excel_service.dart             # Excel export (3 sheets)
+    └── notification_service.dart      # Local push notifications
 ```
 
 ---
@@ -94,10 +110,11 @@ lib/
 ## 🔧 Firebase Setup
 
 1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-2. Add your Android/iOS app to the Firebase project
+2. Add your Android app to the Firebase project
 3. Download and replace `google-services.json` in `android/app/`
 4. Enable **Email/Password** Authentication in Firebase Console
-5. Create a **Firestore Database** with the following collections:
+5. Create a **Firestore Database** in production mode
+6. Add the following collections:
    - `users` — stores user profile data
    - `students` — stores student fee records
    - `payments` — stores individual payment transactions
@@ -107,13 +124,20 @@ lib/
 ## 🗃️ Firestore Data Structure
 
 ```
+users/
+  └── {userId}
+        ├── name
+        ├── email
+        ├── role (admin)
+        └── createdAt
+
 students/
   └── {studentId}
         ├── name
         ├── course
+        ├── currentSemester
         ├── totalFees
         ├── paidFees
-        ├── currentSemester
         ├── dueDate
         └── createdAt
 
@@ -128,6 +152,48 @@ payments/
 
 ---
 
+## 🔀 App Navigation Flow
+
+```
+Welcome Screen
+    ├── Sign In → Login Screen → Home Dashboard
+    └── Create Account → Register Screen → Login Screen
+
+Home Dashboard
+    ├── Student Card → Student Details → Collect Fee / Payment History
+    ├── 🟠 Admin Panel → System Overview + Financial Summary
+    ├── 📊 Analytics → Charts + Excel Export
+    └── 👤 Profile → Settings → Live Currency Rates
+```
+
+---
+
+## 📋 College Requirements Fulfilled
+
+| Requirement | Implementation |
+|---|---|
+| ✅ Customized UI Screens | Welcome, Login, Home, Profile, Settings |
+| ✅ Named Routes | All navigation via named routes in main.dart |
+| ✅ Admin Panel | Dedicated admin screen with stats and transactions |
+| ✅ Database Integration | Firebase Firestore with full CRUD |
+| ✅ REST API Integration | Live currency rates from frankfurter.app |
+| ✅ Authentication | Firebase Auth with email/password |
+| ✅ Device Features | Local notifications for fee collection & student addition |
+
+---
+
+## 🎓 Academic Details
+
+| Detail | Info |
+|---|---|
+| Programme | Integrated Master of Computer Applications (iMSc.IT) |
+| Semester | VIII |
+| Subject | 221601801 — Cross Platform Mobile App Development |
+
+
+
+---
+
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
@@ -135,3 +201,4 @@ This project is licensed under the [MIT License](LICENSE).
 ---
 
 <p align="center">Made with ❤️ using Flutter & Firebase</p>
+<p align="center">Fee Management System v1.0.0</p>
